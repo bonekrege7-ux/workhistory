@@ -26,11 +26,11 @@
             --btn-hover: #444444;
             
             /* Calendar Colors */
-            --cal-present: #4CAF50; /* Green */
-            --cal-absent: #F44336;  /* Red */
-            --cal-leave: #FFB300;   /* Yellow */
-            --cal-sunday: #9C27B0;  /* Purple */
-            --cal-ot-strip: #F44336; /* Red Overtime Strip */
+            --cal-present: #4CAF50; 
+            --cal-absent: #F44336;  
+            --cal-leave: #FFB300;   
+            --cal-sunday: #9C27B0;  
+            --cal-ot-strip: #F44336; 
         }
 
         /* ================= RESET & BASE ================= */
@@ -49,13 +49,13 @@
         .loading-text { opacity: 0; font-size: 2rem; font-weight: 300; letter-spacing: 2px; transition: opacity 0.8s ease; position: absolute; }
         .loading-text.show { opacity: 1; }
 
-        /* ================= TOP BAR (BACK BUTTON) ================= */
+        /* ================= TOP BAR ================= */
         .top-bar { display: flex; align-items: center; padding: 15px 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
         .back-btn { background: none; border: none; color: var(--text-main); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .back-btn:hover { color: var(--text-sec); }
         .screen-title { flex: 1; text-align: right; font-weight: 600; color: var(--text-sec); font-size: 1rem; }
 
-        /* ================= TITLE SCREEN (HOME) ================= */
+        /* ================= TITLE SCREEN ================= */
         #home-screen { justify-content: center; align-items: center; text-align: center; }
         .game-title { font-size: 2.5rem; font-weight: bold; margin-bottom: 50px; letter-spacing: 2px; }
         .menu-btn { width: 80%; max-width: 300px; padding: 18px; margin: 10px 0; background: var(--btn-bg); border: 1px solid var(--border); color: var(--text-main); font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; letter-spacing: 1px; }
@@ -66,7 +66,7 @@
         .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; color: var(--text-sec); font-size: 0.95rem; }
         select, input { width: 100%; padding: 14px; margin-bottom: 20px; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); border-radius: 8px; font-size: 1rem; appearance: none; }
-        select:focus { outline: none; border-color: var(--text-sec); }
+        select:focus, input:focus { outline: none; border-color: var(--text-sec); }
         
         .btn-primary { width: 100%; padding: 16px; background: #FFFFFF; color: #000000; border: none; border-radius: 8px; font-weight: bold; font-size: 1.05rem; cursor: pointer; transition: 0.2s; }
         .btn-primary:hover { background: #E0E0E0; }
@@ -110,16 +110,10 @@
         /* ================= MODAL OVERLAY ================= */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; opacity: 0; visibility: hidden; transition: 0.3s; }
         .modal-overlay.show { opacity: 1; visibility: visible; }
-        .modal-content { width: 100%; max-width: 450px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; transform: translateY(20px); transition: 0.3s; }
+        .modal-content { width: 100%; max-width: 450px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; transform: translateY(20px); transition: 0.3s; max-height: 90vh; overflow-y: auto; }
         .modal-overlay.show .modal-content { transform: translateY(0); }
         .close-modal { background: none; border: none; color: var(--text-sec); font-size: 1.5rem; cursor: pointer; }
         .close-modal:hover { color: var(--text-main); }
-
-        /* Detail List Item inside Modal */
-        .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
-        .detail-row:last-child { border-bottom: none; }
-        .detail-label { color: var(--text-sec); }
-        .detail-val { font-weight: bold; text-align: right; }
 
         .d-none { display: none !important; }
     </style>
@@ -188,7 +182,7 @@
             <!-- Detailed Calendar UI -->
             <div class="card">
                 <h3 style="margin-bottom: 5px; font-size: 1.1rem;">Calendar Details</h3>
-                <p style="color: var(--text-sec); font-size: 0.8rem; margin-bottom: 15px;">Tap on any date cell to view specific schedule details.</p>
+                <p style="color: var(--text-sec); font-size: 0.8rem; margin-bottom: 15px;">Tap on any date cell to custom edit schedule details.</p>
                 <div class="cal-header-row">
                     <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
                 </div>
@@ -243,38 +237,23 @@
             </div>
             <div class="card text-center" style="padding: 40px 20px;">
                 <h2 style="margin-bottom: 10px;">Work Schedule</h2>
-                <p style="color: var(--text-sec); margin-bottom: 20px; font-size: 0.95rem;">Version 2.2 (Dark Edition)<br>Designed for mobile & desktop.</p>
-                <p style="color: var(--text-sec); font-size: 0.9rem;">Features automatic cut-off calculations (26th - 25th), dynamic UI, interactive tap-to-view calendar, editable history, and local permanent storage.</p>
+                <p style="color: var(--text-sec); margin-bottom: 20px; font-size: 0.95rem;">Version 2.3 (Dark Edition)<br>Designed for mobile & desktop.</p>
+                <p style="color: var(--text-sec); font-size: 0.9rem;">Features automatic cut-off calculations (26th - 25th), dynamic UI, interactive custom tap-to-edit calendar, and local permanent storage.</p>
             </div>
         </div>
 
     </div>
 
-    <!-- ================= EDIT MODAL ================= -->
+    <!-- ================= EDIT / CUSTOM DATE MODAL ================= -->
     <div id="edit-modal" class="modal-overlay">
         <div class="modal-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h3 style="font-size: 1.2rem;">Edit Record</h3>
+                <h3 style="font-size: 1.2rem;">Custom Date Detail</h3>
                 <button class="close-modal" onclick="closeEditModal()">✖</button>
             </div>
             <p id="edit-date-display" style="color:var(--text-sec); font-size: 0.9rem; margin-bottom: 20px;"></p>
             
             <div id="edit-form-inputs"></div>
-        </div>
-    </div>
-
-    <!-- ================= CALENDAR DAY DETAIL MODAL ================= -->
-    <div id="day-detail-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h3 style="font-size: 1.2rem;">Date Schedule Info</h3>
-                <button class="close-modal" onclick="closeDayDetailModal()">✖</button>
-            </div>
-            <p id="detail-date-display" style="color:var(--text-sec); font-size: 0.9rem; margin-bottom: 15px;"></p>
-            
-            <div id="detail-content-body"></div>
-
-            <button class="btn-primary" onclick="closeDayDetailModal()" style="margin-top: 20px;">Close</button>
         </div>
     </div>
 
@@ -409,7 +388,7 @@
         }
 
         function submitPresence(hariInt, dateStr) {
-            const nowObj = new Date();
+            const nowObj = new Date(dateStr);
             let jamReguler = 0; let jamLembur = 0; let isLembur = false; let statusLaporan = "";
 
             if (hariInt >= 1 && hariInt <= 6) {
@@ -540,195 +519,118 @@
                     }
                 }
                 
-                calGrid.innerHTML += `<div class="${classes}" onclick="openDayDetailModal('${dateStr}')">${innerHtml}</div>`;
+                calGrid.innerHTML += `<div class="${classes}" onclick="openEditModal('${dateStr}')">${innerHtml}</div>`;
             }
         }
 
-        /* ================= DAY DETAIL MODAL LOGIC ================= */
-        function openDayDetailModal(dateStr) {
-            const db = getDB();
-            const record = db.find(d => d.id === dateStr);
-            const dateObj = new Date(dateStr);
-            const hariInt = dateObj.getDay();
-            
-            document.getElementById('detail-date-display').innerText = `${HARI_NAMES[hariInt]}, ${dateObj.getDate()} ${BULAN_NAMES[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
-            
-            const container = document.getElementById('detail-content-body');
-
-            if (!record) {
-                container.innerHTML = `
-                    <div class="detail-row">
-                        <span class="detail-label">Status</span>
-                        <span class="detail-val" style="color:var(--text-sec)">No Record Recorded</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Work Schedule</span>
-                        <span class="detail-val">-</span>
-                    </div>
-                `;
-            } else {
-                let regScheduleStr = "-";
-                let otScheduleStr = "-";
-
-                // Determine Regular Schedule Time
-                if (record.status === 'Present') {
-                    if (hariInt >= 1 && hariInt <= 5) regScheduleStr = "08:00 - 16:00 (8.0 Hours)";
-                    else if (hariInt === 6) regScheduleStr = "08:00 - 13:00 (5.0 Hours)";
-                }
-
-                // Determine Overtime Schedule Time
-                if (record.isLembur) {
-                    if (hariInt >= 1 && hariInt <= 5) otScheduleStr = "16:00 - 19:30 (+3.5 Hours)";
-                    else if (hariInt === 6) otScheduleStr = "13:00 - 15:00 (+2.0 Hours)";
-                    else if (hariInt === 0) {
-                        if (record.jamLembur === 3) otScheduleStr = "13:00 - 16:00 (3.0 Hours)";
-                        else if (record.jamLembur === 7) otScheduleStr = "13:00 - 20:00 (7.0 Hours)";
-                    }
-                }
-
-                let statusColor = "var(--text-main)";
-                if(record.status === 'Absent') statusColor = "var(--cal-absent)";
-                else if(record.status === 'Sick' || record.status === 'Leave') statusColor = "var(--cal-leave)";
-                else if(record.status === 'Present') statusColor = "var(--cal-present)";
-                else if(record.status === 'Overtime' && record.hari === 'Sunday') statusColor = "var(--cal-sunday)";
-
-                container.innerHTML = `
-                    <div class="detail-row">
-                        <span class="detail-label">Attendance Status</span>
-                        <span class="detail-val" style="color:${statusColor}">${record.status}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Regular Hours Time</span>
-                        <span class="detail-val">${regScheduleStr}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Overtime Hours Time</span>
-                        <span class="detail-val">${otScheduleStr}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Regular Duration</span>
-                        <span class="detail-val">${record.jamReguler} Hours</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Overtime Duration</span>
-                        <span class="detail-val">${record.jamLembur} Hours</span>
-                    </div>
-                    <div class="detail-row" style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px;">
-                        <span class="detail-label" style="color:var(--text-main); font-weight:bold;">Total Accumulation</span>
-                        <span class="detail-val" style="font-size:1.1rem; color:var(--text-main);">${record.totalJam} Hours</span>
-                    </div>
-                `;
-            }
-
-            document.getElementById('day-detail-modal').classList.add('show');
-        }
-
-        function closeDayDetailModal() {
-            document.getElementById('day-detail-modal').classList.remove('show');
-        }
-
-        /* ================= EDIT MODAL LOGIC ================= */
+        /* ================= EDIT / CUSTOM DATE MODAL LOGIC ================= */
         function openEditModal(dateStr) {
             const db = getDB();
-            const record = db.find(d => d.id === dateStr);
-            if (!record) return;
-
-            const dateObj = new Date(record.tanggal);
+            let record = db.find(d => d.id === dateStr);
+            const dateObj = new Date(dateStr);
             const hariInt = dateObj.getDay();
 
-            document.getElementById('edit-date-display').innerText = `${record.hari}, ${dateObj.getDate()} ${BULAN_NAMES[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+            document.getElementById('edit-date-display').innerText = `${HARI_NAMES[hariInt]}, ${dateObj.getDate()} ${BULAN_NAMES[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
 
-            let html = '';
-            if (hariInt >= 1 && hariInt <= 6) {
-                html += `
-                    <label>Attendance Status</label>
-                    <select id="edit-input-status" onchange="toggleEditLembur()">
-                        <option value="Present" ${record.status === 'Present' ? 'selected' : ''}>Present (Masuk)</option>
-                        <option value="Absent" ${record.status === 'Absent' ? 'selected' : ''}>Absent (Tidak Masuk)</option>
-                        <option value="Sick" ${record.status === 'Sick' ? 'selected' : ''}>Sick (Sakit)</option>
-                        <option value="Leave" ${record.status === 'Leave' ? 'selected' : ''}>Permitted Leave (Izin)</option>
-                    </select>
-                    <div id="edit-lembur-wrapper" class="${record.status === 'Present' ? '' : 'd-none'}">
-                        <label>Overtime?</label>
-                        <select id="edit-input-lembur">
-                            <option value="No" ${!record.isLembur ? 'selected' : ''}>No (Regular hours)</option>
-                            <option value="Yes" ${record.isLembur ? 'selected' : ''}>Yes (Overtime)</option>
-                        </select>
-                    </div>
-                `;
-            } else {
-                html += `
-                    <label>Sunday Overtime?</label>
-                    <select id="edit-input-status-minggu" onchange="toggleEditLemburMinggu()">
-                        <option value="No" ${!record.isLembur ? 'selected' : ''}>No (Full Holiday)</option>
-                        <option value="Yes" ${record.isLembur ? 'selected' : ''}>Yes (Working on Sunday)</option>
-                    </select>
-                    <div id="edit-opsi-lembur-minggu" class="${record.isLembur ? '' : 'd-none'}">
-                        <label>Select Duration</label>
-                        <select id="edit-input-durasi-minggu">
-                            <option value="3" ${record.jamLembur === 3 ? 'selected' : ''}>Option A: 13:00 - 16:00 (3 Hours)</option>
-                            <option value="7" ${record.jamLembur === 7 ? 'selected' : ''}>Option B: 13:00 - 20:00 (7 Hours)</option>
-                        </select>
-                    </div>
-                `;
+            const currStatus = record ? record.status : (hariInt === 0 ? 'Holiday' : 'Present');
+            const currReg = record ? record.jamReguler : (hariInt === 0 ? 0 : (hariInt === 6 ? 5 : 8));
+            const currIsLembur = record ? record.isLembur : false;
+            const currLembur = record ? record.jamLembur : 0;
+
+            let html = `
+                <label>Attendance Status</label>
+                <select id="edit-input-status" onchange="autoFillCustomDefaults(${hariInt})">
+                    <option value="Present" ${currStatus === 'Present' ? 'selected' : ''}>Present (Masuk)</option>
+                    <option value="Absent" ${currStatus === 'Absent' ? 'selected' : ''}>Absent (Tidak Masuk)</option>
+                    <option value="Sick" ${currStatus === 'Sick' ? 'selected' : ''}>Sick (Sakit)</option>
+                    <option value="Leave" ${currStatus === 'Leave' ? 'selected' : ''}>Permitted Leave (Izin)</option>
+                    <option value="Overtime" ${currStatus === 'Overtime' ? 'selected' : ''}>Overtime (Lembur Minggu)</option>
+                    <option value="Holiday" ${currStatus === 'Holiday' ? 'selected' : ''}>Holiday (Libur)</option>
+                </select>
+
+                <label>Regular Working Hours (Hours)</label>
+                <input type="number" id="edit-input-reg" step="0.5" min="0" value="${currReg}">
+
+                <label>Overtime Status</label>
+                <select id="edit-input-is-lembur">
+                    <option value="No" ${!currIsLembur ? 'selected' : ''}>No Overtime</option>
+                    <option value="Yes" ${currIsLembur ? 'selected' : ''}>Yes Overtime</option>
+                </select>
+
+                <label>Overtime Duration (Hours)</label>
+                <input type="number" id="edit-input-lembur" step="0.5" min="0" value="${currLembur}">
+
+                <button class="btn-primary" onclick="saveCustomDate('${dateStr}', ${hariInt})" style="margin-top:10px;">Save Custom Details</button>
+            `;
+
+            if (record) {
+                html += `<button class="btn-outline" onclick="deleteCustomDate('${dateStr}')" style="border-color:#F44336; color:#F44336; margin-top:10px;">Delete Record</button>`;
             }
-            html += `<button class="btn-primary" onclick="saveEdit('${dateStr}', ${hariInt})" style="margin-top:20px;">Save Changes</button>`;
             
             document.getElementById('edit-form-inputs').innerHTML = html;
             document.getElementById('edit-modal').classList.add('show');
+        }
+
+        function autoFillCustomDefaults(hariInt) {
+            const status = document.getElementById('edit-input-status').value;
+            const regInput = document.getElementById('edit-input-reg');
+            const isLemburInput = document.getElementById('edit-input-is-lembur');
+            const lemburInput = document.getElementById('edit-input-lembur');
+
+            if (status === 'Present') {
+                regInput.value = (hariInt === 6) ? 5 : (hariInt === 0 ? 0 : 8);
+            } else if (status === 'Overtime') {
+                regInput.value = 0;
+                isLemburInput.value = 'Yes';
+                lemburInput.value = (hariInt === 0) ? 3 : 3.5;
+            } else {
+                regInput.value = 0;
+                isLemburInput.value = 'No';
+                lemburInput.value = 0;
+            }
         }
 
         function closeEditModal() {
             document.getElementById('edit-modal').classList.remove('show');
         }
 
-        function toggleEditLembur() {
+        function saveCustomDate(dateStr, hariInt) {
             const status = document.getElementById('edit-input-status').value;
-            const lemburWrap = document.getElementById('edit-lembur-wrapper');
-            if (status === 'Present') { lemburWrap.classList.remove('d-none'); } 
-            else { lemburWrap.classList.add('d-none'); document.getElementById('edit-input-lembur').value = 'No'; }
-        }
+            const regHours = parseFloat(document.getElementById('edit-input-reg').value) || 0;
+            const isLemburSelect = document.getElementById('edit-input-is-lembur').value;
+            const otHours = parseFloat(document.getElementById('edit-input-lembur').value) || 0;
+            const isLembur = isLemburSelect === 'Yes' || otHours > 0;
 
-        function toggleEditLemburMinggu() {
-            const isLembur = document.getElementById('edit-input-status-minggu').value;
-            const opsiWrap = document.getElementById('edit-opsi-lembur-minggu');
-            if (isLembur === 'Yes') { opsiWrap.classList.remove('d-none'); } 
-            else { opsiWrap.classList.add('d-none'); }
-        }
-
-        function saveEdit(dateStr, hariInt) {
-            let jamReguler = 0; let jamLembur = 0; let isLembur = false; let statusLaporan = "";
-
-            if (hariInt >= 1 && hariInt <= 6) {
-                const status = document.getElementById('edit-input-status').value;
-                const lemburSelect = document.getElementById('edit-input-lembur').value;
-                statusLaporan = status;
-                
-                if (status === 'Present') {
-                    jamReguler = (hariInt === 6) ? 5 : 8; 
-                    if (lemburSelect === 'Yes') { isLembur = true; jamLembur = (hariInt === 6) ? 2 : 3.5; }
-                }
-            } else if (hariInt === 0) {
-                const isLemburSelect = document.getElementById('edit-input-status-minggu').value;
-                if (isLemburSelect === 'Yes') {
-                    statusLaporan = "Overtime"; isLembur = true;
-                    jamLembur = parseFloat(document.getElementById('edit-input-durasi-minggu').value);
-                } else { statusLaporan = "Holiday"; }
-            }
+            const dateObj = new Date(dateStr);
+            const payload = {
+                id: dateStr,
+                tanggal: dateStr,
+                hari: HARI_NAMES[hariInt],
+                status: status,
+                jamReguler: regHours,
+                isLembur: isLembur,
+                jamLembur: otHours,
+                totalJam: regHours + otHours,
+                periode: getPeriode(dateObj)
+            };
 
             let db = getDB();
-            let index = db.findIndex(d => d.id === dateStr);
-            if (index !== -1) {
-                db[index].status = statusLaporan;
-                db[index].jamReguler = jamReguler;
-                db[index].isLembur = isLembur;
-                db[index].jamLembur = jamLembur;
-                db[index].totalJam = jamReguler + jamLembur;
-                saveDB(db);
-            }
+            db = db.filter(d => d.id !== dateStr);
+            db.push(payload);
+            saveDB(db);
 
             closeEditModal();
             renderHistory();
+        }
+
+        function deleteCustomDate(dateStr) {
+            if (confirm("Are you sure you want to delete record for this date?")) {
+                let db = getDB();
+                db = db.filter(d => d.id !== dateStr);
+                saveDB(db);
+                closeEditModal();
+                renderHistory();
+            }
         }
 
         /* ================= EXPORT / IMPORT ================= */
