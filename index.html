@@ -391,4 +391,47 @@
             document.getElementById('sum-hari').innerText = totalHadir;
             document.getElementById('sum-reguler').innerText = totalReg;
             document.getElementById('sum-lembur').innerText = totalLembur;
-            document.getElementById('sum-total').innerText = t
+            document.getElementById('sum-total').innerText = totalAll;
+        }
+
+        /* ================= EXPORT / IMPORT ================= */
+        function exportData() {
+            const db = getDB();
+            if(db.length === 0) return alert("Belum ada data untuk diexport!");
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            const anchor = document.createElement('a');
+            anchor.href = dataStr;
+            anchor.download = `ZheeSchedule_Backup_${new Date().getTime()}.json`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+        }
+
+        function importData() {
+            const fileInput = document.getElementById('import-file');
+            if(!fileInput.files.length) return alert("Pilih file JSON terlebih dahulu!");
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if(Array.isArray(importedData)) {
+                        saveDB(importedData);
+                        alert("Data berhasil dipulihkan!");
+                        updateFilterDropdown();
+                        initPresensi(); // Update hari ini jika terpengaruh
+                    } else { alert("Format data tidak valid."); }
+                } catch (error) { alert("Gagal membaca file JSON."); }
+            };
+            reader.readAsText(file);
+        }
+
+        // Initialize App on load
+        window.onload = () => { initPresensi(); };
+        // Auto-reset trigger cek per 1 jam, jikalau App terbuka saat lewat tengah malam
+        setInterval(initPresensi, 3600000); 
+
+    </script>
+</body>
+</html>
