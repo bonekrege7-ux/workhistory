@@ -2,358 +2,393 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tabel Analisis Fisik dan Ulang Tahun Karakter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zhee Work Schedule</title>
+    <!-- Inline Manifest PWA -->
+    <script>
+        const manifest = {
+            "name": "Zhee Work Schedule",
+            "short_name": "Zhee Schedule",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#0F0E17",
+            "theme_color": "#0F0E17",
+            "icons": [{
+                "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' fill='%239D4EDD'><rect width='192' height='192' fill='%230F0E17'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='80' font-family='sans-serif' fill='%23FFFFFF'>Z</text></svg>",
+                "sizes": "192x192",
+                "type": "image/svg+xml"
+            }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+        const manifestUrl = URL.createObjectURL(manifestBlob);
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestUrl;
+        document.head.appendChild(link);
+    </script>
     <style>
+        /* ================= VARIABLES ================= */
         :root {
-            --primary-color: #2c3e50;
-            --hover-color: #f1f2f6;
-            --border-color: #dfe4ea;
+            --bg-main: #0B0A10;
+            --bg-card: #1A1829;
+            --border-card: #322B4A;
+            --accent-main: #7B2CBF;
+            --accent-dark: #241442;
+            --accent-light: #9D4EDD;
+            --text-main: #FFFFFF;
+            --text-sec: #A0A0B2;
+            --grad-btn: linear-gradient(135deg, #6C5CE7, #A29BFE);
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        h2 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
-        .table-container {
-            overflow-x: auto;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            background-color: #fff;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        th {
-            background-color: var(--primary-color);
-            color: #fff;
-            cursor: pointer;
-            position: relative;
-            user-select: none;
-            white-space: nowrap;
-        }
-        th:hover {
-            background-color: #34495e;
-        }
-        th::after {
-            content: '\21C5'; /* Up down arrow */
-            position: absolute;
-            right: 8px;
-            color: #aaa;
-            font-size: 0.8em;
-        }
-        th.th-sort-asc::after {
-            content: '\25B2'; /* Up arrow */
-            color: #fff;
-        }
-        th.th-sort-desc::after {
-            content: '\25BC'; /* Down arrow */
-            color: #fff;
-        }
-        tr:hover {
-            background-color: var(--hover-color);
-        }
-        small {
-            color: #7f8c8d;
-            font-size: 0.85em;
-            display: block;
-            margin-top: 4px;
-        }
-        .text-center {
-            text-align: center;
-        }
+
+        /* ================= RESET & BASE ================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.6; }
+        
+        /* ================= LAYOUT & UI ================= */
+        header { padding: 20px; text-align: center; border-bottom: 1px solid var(--border-card); background: var(--bg-card); position: sticky; top: 0; z-index: 100; }
+        header h1 { font-size: 1.5rem; background: var(--grad-btn); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .nav-tabs { display: flex; justify-content: center; background: var(--bg-card); border-bottom: 1px solid var(--border-card); }
+        .tab-btn { flex: 1; padding: 15px; background: none; border: none; color: var(--text-sec); font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { color: var(--text-main); border-bottom: 3px solid var(--accent-light); background: rgba(123, 44, 191, 0.1); }
+        
+        main { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .section { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ================= CARDS & FORMS ================= */
+        .card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .card-header { font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; color: var(--accent-light); }
+        
+        label { display: block; margin-bottom: 8px; color: var(--text-sec); font-size: 0.95rem; }
+        select, input[type="file"] { width: 100%; padding: 12px; margin-bottom: 20px; background: var(--bg-main); border: 1px solid var(--border-card); color: var(--text-main); border-radius: 8px; font-size: 1rem; }
+        select:focus { outline: none; border-color: var(--accent-light); }
+        
+        .btn { width: 100%; padding: 14px; background: var(--grad-btn); border: none; border-radius: 8px; color: #fff; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
+        .btn-outline { background: transparent; border: 1px solid var(--accent-light); color: var(--accent-light); margin-top: 10px; }
+        .btn-outline:active { background: rgba(157, 78, 221, 0.1); }
+
+        /* ================= HISTORY & TABLES ================= */
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .summary-box { background: var(--bg-main); border: 1px solid var(--border-card); padding: 15px; border-radius: 8px; text-align: center; }
+        .summary-box span { display: block; font-size: 0.8rem; color: var(--text-sec); }
+        .summary-box strong { font-size: 1.2rem; color: var(--accent-light); }
+
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-card); font-size: 0.9rem; }
+        th { color: var(--accent-light); font-weight: 600; background: rgba(36, 20, 66, 0.5); }
+        td { color: var(--text-main); }
+        .text-center { text-align: center; }
+        
+        /* Hidden UI utilities */
+        .d-none { display: none !important; }
+        #date-display { text-align: center; margin-bottom: 20px; font-size: 1.2rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h2>Tabel Analisis Fisik dan Ulang Tahun Karakter</h2>
-    
-    <div class="table-container">
-        <table id="characterTable">
-            <thead>
-                <tr>
-                    <th data-type="number">No</th>
-                    <th data-type="string">Nama Karakter</th>
-                    <th data-type="number">Tinggi Badan (cm)</th>
-                    <th data-type="number">Berat Badan (kg)</th>
-                    <th data-type="string">BWH (Bust-Waist-Hips)</th>
-                    <th data-type="string">Tanggal Lahir</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Data starts here -->
+    <header>
+        <h1>Zhee Work Schedule</h1>
+    </header>
 
-                <tr>
-                    <td data-sort="1" class="text-center">1</td>
-                    <td data-sort="Frederica Bernkastel">Frederica Bernkastel</td>
-                    <td data-sort="160">~160 cm<br><small>(Est)</small></td>
-                    <td data-sort="47">~47 kg<br><small>(Est)</small></td>
-                    <td data-sort="73-52-72">73-52-72<br><small>(Tipe Mungil)</small></td>
-                    <td data-sort="08-21">21 Agustus<br><small>(Perayaan non-resmi Rika)</small></td>
-                </tr>
-                <tr>
-                    <td data-sort="2" class="text-center">2</td>
-                    <td data-sort="Enma Ai">Enma Ai</td>
-                    <td data-sort="158">158 cm</td>
-                    <td data-sort="45">~45 kg<br><small>(Est)</small></td>
-                    <td data-sort="70-56-82">70-56-82<br><small>(Tipe Mungil)</small></td>
-                    <td data-sort="11-16">16 November<br><small>(Estimasi Tema/Fandom)</small></td>
-                </tr>
-                <tr>
-                    <td data-sort="3" class="text-center">3</td>
-                    <td data-sort="Lambdadelta">Lambdadelta</td>
-                    <td data-sort="165">~165 cm<br><small>(Est)</small></td>
-                    <td data-sort="55">~55 kg<br><small>(Est)</small></td>
-                    <td data-sort="79-53-74">79-53-74<br><small>(Tipe Mungil)</small></td>
-                    <td data-sort="06-20">20 Juni</td>
-                </tr>
-                <tr>
-                    <td data-sort="4" class="text-center">4</td>
-                    <td data-sort="Homura Akemi">Homura Akemi</td>
-                    <td data-sort="159">~159 cm<br><small>(Dikoreksi dari 1659 cm)</small></td>
-                    <td data-sort="46">~46 kg<br><small>(Est)</small></td>
-                    <td data-sort="78-56-80">78-56-80<br><small>(Tipe Sedang/Atletis)</small></td>
-                    <td data-sort="09-29">29 September<br><small>(Estimasi/Manga Rilis)</small></td>
-                </tr>
-                <tr>
-                    <td data-sort="5" class="text-center">5</td>
-                    <td data-sort="Emilie">Emilie</td>
-                    <td data-sort="165">~165 cm<br><small>(Model Sedang)</small></td>
-                    <td data-sort="52">~52 kg<br><small>(Est)</small></td>
-                    <td data-sort="90-60-88">90-60-88<br><small>(Tipe Berisi)</small></td>
-                    <td data-sort="09-22">22 September</td>
-                </tr>
-                <tr>
-                    <td data-sort="6" class="text-center">6</td>
-                    <td data-sort="Yukina Minato">Yukina Minato</td>
-                    <td data-sort="155">155 cm</td>
-                    <td data-sort="45">~45 kg<br><small>(Est)</small></td>
-                    <td data-sort="75-50-81">75-50-81<br><small>(Tipe Ramping)</small></td>
-                    <td data-sort="10-26">26 Oktober</td>
-                </tr>
-                <tr>
-                    <td data-sort="7" class="text-center">7</td>
-                    <td data-sort="Imai Lisa">Imai Lisa</td>
-                    <td data-sort="158">158 cm</td>
-                    <td data-sort="50">~50 kg<br><small>(Est)</small></td>
-                    <td data-sort="85-58-85">85-58-85<br><small>(Tipe Sedang/Curvy)</small></td>
-                    <td data-sort="08-25">25 Agustus</td>
-                </tr>
-                <tr>
-                    <td data-sort="8" class="text-center">8</td>
-                    <td data-sort="Ako Udagawa">Ako Udagawa</td>
-                    <td data-sort="148">148 cm</td>
-                    <td data-sort="40">~40 kg<br><small>(Est)</small></td>
-                    <td data-sort="75-55-78">75-55-78<br><small>(Tipe Mungil)</small></td>
-                    <td data-sort="07-03">3 Juli</td>
-                </tr>
-                <tr>
-                    <td data-sort="9" class="text-center">9</td>
-                    <td data-sort="Rinko Shirokane">Rinko Shirokane</td>
-                    <td data-sort="157">157 cm</td>
-                    <td data-sort="48">~48 kg<br><small>(Est)</small></td>
-                    <td data-sort="88-56-87">88-56-87<br><small>(Tipe Sedang/Busty)</small></td>
-                    <td data-sort="10-17">17 Oktober</td>
-                </tr>
-                <tr>
-                    <td data-sort="10" class="text-center">10</td>
-                    <td data-sort="Columbina">Columbina</td>
-                    <td data-sort="155">~155 cm<br><small>(Model Sedang)</small></td>
-                    <td data-sort="45">~45 kg<br><small>(Est)</small></td>
-                    <td data-sort="81-57-82">81-57-82<br><small>(Tipe Sedang/Tertutup)</small></td>
-                    <td data-sort="01-14">14 Januari<br><small>(Dikonfirmasi di Wiki/Lore)</small></td>
-                </tr>
-                <tr>
-                    <td data-sort="11" class="text-center">11</td>
-                    <td data-sort="Ronova (Genshin Lore/Villain)">Ronova (Genshin Lore/Villain)</td>
-                    <td data-sort="172">~172 cm<br><small>(Model Tinggi)</small></td>
-                    <td data-sort="56">~56 kg<br><small>(Est)</small></td>
-                    <td data-sort="92-55-92">92-55-92<br><small>(Tipe Dewasa Tinggi)</small></td>
-                    <td data-sort="11-01">1 November<br><small>(Est. Tema: Penguasa Kematian)</small></td>
-                </tr>
-                <tr>
-                    <td data-sort="12" class="text-center">12</td>
-                    <td data-sort="Chiori">Chiori</td>
-                    <td data-sort="155">~155 cm<br><small>(Model Pendek)</small></td>
-                    <td data-sort="44">~44 kg<br><small>(Est)</small></td>
-                    <td data-sort="77-56-80">77-56-80<br><small>(Tipe Ramping)</small></td>
-                    <td data-sort="03-13">13 Maret</td>
-                </tr>
-                <tr>
-                    <td data-sort="13" class="text-center">13</td>
-                    <td data-sort="Navia">Navia</td>
-                    <td data-sort="170">~170 cm<br><small>(Model Tinggi)</small></td>
-                    <td data-sort="55">~55 kg<br><small>(Est)</small></td>
-                    <td data-sort="89-61-92">89-61-92<br><small>(Tipe Tinggi/Curvy)</small></td>
-                    <td data-sort="08-16">16 Agustus</td>
-                </tr>
-                <tr>
-                    <td data-sort="14" class="text-center">14</td>
-                    <td data-sort="Hina Hikawa">Hina Hikawa</td>
-                    <td data-sort="156">156 cm</td>
-                    <td data-sort="45">~45 kg<br><small>(Est)</small></td>
-                    <td data-sort="80-57-83">80-57-83<br><small>(Tipe Ramping)</small></td>
-                    <td data-sort="03-20">20 Maret</td>
-                </tr>
-                <tr>
-                    <td data-sort="15" class="text-center">15</td>
-                    <td data-sort="Sakuya Izayoi">Sakuya Izayoi</td>
-                    <td data-sort="159">~159 cm</td>
-                    <td data-sort="48">~48 kg<br><small>(Est)</small></td>
-                    <td data-sort="88-58-85">88-58-85<br><small>(Tipe Dewasa Sedang)</small></td>
-                    <td data-sort="03-09">9 Maret<br><small>(Dirayakan sbg Sakuya Day)</small></td>
-                </tr>
-                <tr>
-                    <td data-sort="16" class="text-center">16</td>
-                    <td data-sort="Rui Yashio">Rui Yashio</td>
-                    <td data-sort="169">169 cm</td>
-                    <td data-sort="53">~53 kg<br><small>(Est)</small></td>
-                    <td data-sort="83-59-86">83-59-86<br><small>(Tipe Tinggi/Ramping)</small></td>
-                    <td data-sort="11-19">19 November</td>
-                </tr>
-                <tr>
-                    <td data-sort="17" class="text-center">17</td>
-                    <td data-sort="Takako Sugiura">Takako Sugiura</td>
-                    <td data-sort="165">~165 cm<br><small>(Est)</small></td>
-                    <td data-sort="50">~50 kg<br><small>(Est)</small></td>
-                    <td data-sort="84-59-85">84-59-85<br><small>(Tipe Tinggi Remaja)</small></td>
-                    <td data-sort="10-07">7 Oktober 1983</td>
-                </tr>
-                <tr>
-                    <td data-sort="18" class="text-center">18</td>
-                    <td data-sort="Mei Misaki">Mei Misaki</td>
-                    <td data-sort="152">152 cm</td>
-                    <td data-sort="45">~45 kg<br><small>(Resmi)</small></td>
-                    <td data-sort="75-55-78">75-55-78<br><small>(Tipe Ramping/Petite)</small></td>
-                    <td data-sort="04-04">4 April 1983</td>
-                </tr>
-                <tr>
-                    <td data-sort="19" class="text-center">19</td>
-                    <td data-sort="Letana Andreanov / Lenya">Letana Andreanov / Lenya</td>
-                    <td data-sort="171">171 cm/155 cm</td>
-                    <td data-sort="48">48 kg/42 kg<br><small>(Resmi)</small></td>
-                    <td data-sort="83-58-89">83-58-89</td>
-                    <td data-sort="03-06">6 Maret</td>
-                </tr>
-                <tr>
-                    <td data-sort="20" class="text-center">20</td>
-                    <td data-sort="Iroha Sakayori">Iroha Sakayori</td>
-                    <td data-sort="158">~158 cm<br><small>(Est)</small></td>
-                    <td data-sort="46">~46 kg<br><small>(Est)</small></td>
-                    <td data-sort="82-57-83">82-57-83<br><small>(Tipe Sedang)</small></td>
-                    <td data-sort="05-11">11 Mei</td>
-                </tr>
-                <tr>
-                    <td data-sort="21" class="text-center">21</td>
-                    <td data-sort="Satou Matsuzaka">Satou Matsuzaka</td>
-                    <td data-sort="161">161 cm</td>
-                    <td data-sort="49">~49 kg<br><small>(Est)</small></td>
-                    <td data-sort="85-58-86">85-58-86<br><small>(Tipe Proporsional)</small></td>
-                    <td data-sort="12-31">31 Desember</td>
-                </tr>
-                <tr>
-                    <td data-sort="22" class="text-center">22</td>
-                    <td data-sort="Sayo Hikawa">Sayo Hikawa</td>
-                    <td data-sort="161">161 cm</td>
-                    <td data-sort="48">~48 kg<br><small>(Est)</small></td>
-                    <td data-sort="83-58-84">83-58-84<br><small>(Tipe Proporsional)</small></td>
-                    <td data-sort="03-20">20 Maret</td>
-                </tr>
-                <tr>
-                    <td data-sort="23" class="text-center">23</td>
-                    <td data-sort="Madoka Kaname">Madoka Kaname</td>
-                    <td data-sort="152">152 cm</td>
-                    <td data-sort="43">~43 kg<br><small>(Est)</small></td>
-                    <td data-sort="76-56-79">76-56-79<br><small>(Tipe Sedang/Petite)</small></td>
-                    <td data-sort="10-03">3 Oktober</td>
-                </tr>
-                <tr>
-                    <td data-sort="24" class="text-center">24</td>
-                    <td data-sort="Koto Satsuki">Koto Satsuki</td>
-                    <td data-sort="165">165 cm</td>
-                    <td data-sort="51">~51 kg<br><small>(Est)</small></td>
-                    <td data-sort="80-49-87">80-49-87<br><small>(Tipe Ramping)</small></td>
-                    <td data-sort="07-26">26 Juli</td>
-                </tr>
-                <tr>
-                    <td data-sort="25" class="text-center">25</td>
-                    <td data-sort="Hinako Yaotose">Hinako Yaotose</td>
-                    <td data-sort="159">159 cm</td>
-                    <td data-sort="47">~47 kg<br><small>(Est)</small></td>
-                    <td data-sort="80-56-82">80-56-82<br><small>(Tipe Sedang)</small></td>
-                    <td data-sort="07-02">2 Juli<br><small>(Usia canonical 16 tahun)</small></td>
-                </tr>
-                <tr>
-                    <td data-sort="26" class="text-center">26</td>
-                    <td data-sort="Miko Yashiro">Miko Yashiro</td>
-                    <td data-sort="156">156 cm</td>
-                    <td data-sort="46">~46 kg<br><small>(Est)</small></td>
-                    <td data-sort="84-57-85">84-57-85<br><small>(Tipe Sedang)</small></td>
-                    <td data-sort="10-22">22 Oktober</td>
-                </tr>
-                <tr>
-                    <td data-sort="27" class="text-center">27</td>
-                    <td data-sort="Miko Yotsuya (Lore)">Miko Yotsuya (Lore)</td>
-                    <td data-sort="160">160 cm</td>
-                    <td data-sort="48">~48 kg<br><small>(Est)</small></td>
-                    <td data-sort="86-59-87">86-59-87<br><small>(Tipe Sedang/Curvy)</small></td>
-                    <td data-sort="10-17">17 Oktober</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('presensi')">PRESENSI</button>
+        <button class="tab-btn" onclick="switchTab('riwayat')">RIWAYAT</button>
     </div>
 
-    <script>
-        document.querySelectorAll('th').forEach(headerCell => {
-            headerCell.addEventListener('click', () => {
-                const tableElement = headerCell.closest('table');
-                const tbody = tableElement.querySelector('tbody');
-                const index = Array.prototype.indexOf.call(headerCell.parentElement.children, headerCell);
-                const currentIsAscending = headerCell.classList.contains('th-sort-asc');
-                
-                // Remove sort classes from all headers
-                tableElement.querySelectorAll('th').forEach(th => th.classList.remove('th-sort-asc', 'th-sort-desc'));
-                
-                // Add the correct sort class to the clicked header
-                const newDirection = currentIsAscending ? 'th-sort-desc' : 'th-sort-asc';
-                headerCell.classList.add(newDirection);
-                
-                const rows = Array.from(tbody.querySelectorAll('tr'));
-                
-                const sortFn = (a, b) => {
-                    const aCell = a.cells[index];
-                    const bCell = b.cells[index];
-                    
-                    const aSort = aCell.getAttribute('data-sort');
-                    const bSort = bCell.getAttribute('data-sort');
-                    
-                    const type = headerCell.getAttribute('data-type');
-                    
-                    if (type === 'number') {
-                        return currentIsAscending ? bSort - aSort : aSort - bSort;
-                    } else {
-                        return currentIsAscending ? bSort.localeCompare(aSort) : aSort.localeCompare(bSort);
-                    }
-                };
-                
-                rows.sort(sortFn);
-                tbody.append(...rows);
-            });
-        });
-    </script>
-</body>
-</html>
+    <main>
+        <!-- ================= HALAMAN PRESENSI ================= -->
+        <section id="presensi" class="section active">
+            <div id="date-display"></div>
+            
+            <div class="card" id="form-container">
+                <!-- Form akan di-generate oleh JavaScript di sini -->
+            </div>
 
+            <div class="card d-none" id="done-container">
+                <div class="card-header text-center">Presensi Hari Ini Selesai</div>
+                <p class="text-center" style="color: var(--text-sec); margin-bottom: 15px;">Kamu sudah mengisi presensi untuk hari ini.</p>
+                <button class="btn btn-outline" onclick="resetTodayForm()">Edit Presensi Hari Ini</button>
+            </div>
+        </section>
+
+        <!-- ================= HALAMAN RIWAYAT ================= -->
+        <section id="riwayat" class="section">
+            <div class="card">
+                <label for="filter-periode">Pilih Periode Bulan</label>
+                <select id="filter-periode" onchange="renderHistory()"></select>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-box"><span>Hari Kerja</span><strong id="sum-hari">0</strong></div>
+                <div class="summary-box"><span>Jam Reguler</span><strong id="sum-reguler">0</strong></div>
+                <div class="summary-box"><span>Jam Lembur</span><strong id="sum-lembur">0</strong></div>
+                <div class="summary-box"><span>Total Jam</span><strong id="sum-total">0</strong></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Detail Presensi</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tgl</th>
+                                <th>Hari</th>
+                                <th>Status</th>
+                                <th class="text-center">Reg</th>
+                                <th class="text-center">Lembur</th>
+                                <th class="text-center">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body">
+                            <!-- Data akan dimuat dari JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Backup & Restore</div>
+                <button class="btn" onclick="exportData()" style="margin-bottom:15px;">Export Data (JSON)</button>
+                <label style="margin-bottom:5px;">Import Data (JSON):</label>
+                <input type="file" id="import-file" accept=".json">
+                <button class="btn btn-outline" onclick="importData()">Restore Data</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        /* ================= CORE UTILITIES & PWA ================= */
+        // Basic Service Worker untuk memenuhi kriteria PWA
+        const swCode = `self.addEventListener('install', (e) => { e.waitUntil(self.skipWaiting()); }); self.addEventListener('activate', (e) => { e.waitUntil(self.clients.claim()); }); self.addEventListener('fetch', (e) => {});`;
+        const swBlob = new Blob([swCode], {type: 'application/javascript'});
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(console.error);
+        }
+
+        const DB_KEY = 'zhee_schedule_data';
+        const HARI_NAMES = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        const BULAN_NAMES = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+        function getDB() { return JSON.parse(localStorage.getItem(DB_KEY) || '[]'); }
+        function saveDB(data) { localStorage.setItem(DB_KEY, JSON.stringify(data)); }
+
+        // Navigasi Tab
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            if (tabId === 'riwayat') updateFilterDropdown();
+        }
+
+        /* ================= DATE & LOGIC ENGINE ================= */
+        // Menentukan Periode berdasarkan tanggal tutup buku (Tgl 25)
+        function getPeriode(dateObj) {
+            let year = dateObj.getFullYear();
+            let month = dateObj.getMonth() + 1;
+            let date = dateObj.getDate();
+            if (date > 25) { month += 1; if (month > 12) { month = 1; year += 1; } }
+            return `${year}-${String(month).padStart(2, '0')}`;
+        }
+
+        function formatPeriodeName(periodeStr) {
+            const [y, m] = periodeStr.split('-');
+            return `${BULAN_NAMES[parseInt(m)-1]} ${y}`;
+        }
+
+        /* ================= PRESENSI MODULE ================= */
+        function initPresensi() {
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+            const hariInt = now.getDay();
+            
+            document.getElementById('date-display').innerText = `${HARI_NAMES[hariInt]}, ${now.getDate()} ${BULAN_NAMES[now.getMonth()]} ${now.getFullYear()}`;
+
+            const db = getDB();
+            const alreadyFilled = db.find(d => d.id === todayStr);
+
+            if (alreadyFilled) {
+                document.getElementById('form-container').classList.add('d-none');
+                document.getElementById('done-container').classList.remove('d-none');
+            } else {
+                renderFormContent(hariInt, todayStr);
+            }
+        }
+
+        function resetTodayForm() {
+            document.getElementById('done-container').classList.add('d-none');
+            document.getElementById('form-container').classList.remove('d-none');
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+            renderFormContent(now.getDay(), todayStr);
+        }
+
+        function renderFormContent(hariInt, dateStr) {
+            const container = document.getElementById('form-container');
+            container.classList.remove('d-none');
+            let html = `<div class="card-header">Input Kehadiran</div>`;
+
+            if (hariInt >= 1 && hariInt <= 6) { 
+                // Senin - Sabtu
+                html += `
+                    <label>Status Hari Ini</label>
+                    <select id="input-status" onchange="toggleLemburReguler(${hariInt})">
+                        <option value="Hadir">Masuk Kerja</option>
+                        <option value="Tidak">Tidak Masuk</option>
+                        <option value="Sakit">Sakit</option>
+                        <option value="Izin">Izin</option>
+                    </select>
+                    <div id="lembur-wrapper">
+                        <label>Lembur?</label>
+                        <select id="input-lembur">
+                            <option value="Tidak">Tidak</option>
+                            <option value="Ya">Ya (Lembur)</option>
+                        </select>
+                    </div>`;
+            } else if (hariInt === 0) { 
+                // Minggu
+                html += `
+                    <label>Lembur Hari Ini? (Minggu)</label>
+                    <select id="input-status-minggu" onchange="toggleLemburMinggu()">
+                        <option value="Tidak">Tidak</option>
+                        <option value="Ya">Ya, Saya Lembur</option>
+                    </select>
+                    <div id="opsi-lembur-minggu" class="d-none">
+                        <label>Pilih Durasi Lembur</label>
+                        <select id="input-durasi-minggu">
+                            <option value="3">Opsi A: 13:00 - 16:00 (3 Jam)</option>
+                            <option value="7">Opsi B: 13:00 - 20:00 (7 Jam)</option>
+                        </select>
+                    </div>`;
+            }
+
+            html += `<button class="btn" onclick="simpanPresensi(${hariInt}, '${dateStr}')" style="margin-top:20px;">Simpan Presensi</button>`;
+            container.innerHTML = html;
+        }
+
+        function toggleLemburReguler(hariInt) {
+            const status = document.getElementById('input-status').value;
+            const lemburWrap = document.getElementById('lembur-wrapper');
+            if (status === 'Hadir') { lemburWrap.classList.remove('d-none'); } 
+            else { lemburWrap.classList.add('d-none'); document.getElementById('input-lembur').value = 'Tidak'; }
+        }
+
+        function toggleLemburMinggu() {
+            const isLembur = document.getElementById('input-status-minggu').value;
+            const opsiWrap = document.getElementById('opsi-lembur-minggu');
+            if (isLembur === 'Ya') { opsiWrap.classList.remove('d-none'); } 
+            else { opsiWrap.classList.add('d-none'); }
+        }
+
+        function simpanPresensi(hariInt, dateStr) {
+            const nowObj = new Date();
+            let jamReguler = 0; let jamLembur = 0; let isLembur = false; let statusLaporan = "";
+
+            if (hariInt >= 1 && hariInt <= 6) {
+                const status = document.getElementById('input-status').value;
+                const lemburSelect = document.getElementById('input-lembur').value;
+                statusLaporan = status;
+                
+                if (status === 'Hadir') {
+                    jamReguler = (hariInt === 6) ? 5 : 8; // Sabtu 5 jam, Senin-Jumat 8 Jam
+                    if (lemburSelect === 'Ya') {
+                        isLembur = true;
+                        jamLembur = (hariInt === 6) ? 2 : 3.5;
+                    }
+                }
+            } else if (hariInt === 0) {
+                const isLemburSelect = document.getElementById('input-status-minggu').value;
+                if (isLemburSelect === 'Ya') {
+                    statusLaporan = "Lembur";
+                    isLembur = true;
+                    jamLembur = parseFloat(document.getElementById('input-durasi-minggu').value);
+                } else {
+                    statusLaporan = "Libur";
+                }
+            }
+
+            const payload = {
+                id: dateStr,
+                tanggal: dateStr,
+                hari: HARI_NAMES[hariInt],
+                status: statusLaporan,
+                jamReguler: jamReguler,
+                isLembur: isLembur,
+                jamLembur: jamLembur,
+                totalJam: jamReguler + jamLembur,
+                periode: getPeriode(nowObj)
+            };
+
+            let db = getDB();
+            db = db.filter(d => d.id !== dateStr); // Hapus jika sudah ada (Replace)
+            db.push(payload);
+            saveDB(db);
+            
+            initPresensi(); // Refresh UI
+            if(document.getElementById('riwayat').classList.contains('active')) updateFilterDropdown();
+        }
+
+        /* ================= RIWAYAT MODULE ================= */
+        function updateFilterDropdown() {
+            const db = getDB();
+            const select = document.getElementById('filter-periode');
+            select.innerHTML = '';
+            
+            const periods = [...new Set(db.map(d => d.periode))].sort().reverse();
+            if (periods.length === 0) {
+                const currentPeriod = getPeriode(new Date());
+                select.innerHTML = `<option value="${currentPeriod}">${formatPeriodeName(currentPeriod)}</option>`;
+            } else {
+                periods.forEach(p => {
+                    select.innerHTML += `<option value="${p}">${formatPeriodeName(p)}</option>`;
+                });
+            }
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const db = getDB();
+            const activePeriod = document.getElementById('filter-periode').value;
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = '';
+
+            let filtered = db.filter(d => d.periode === activePeriod);
+            // Sort ascending by date
+            filtered.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
+
+            let totalHadir = 0; let totalReg = 0; let totalLembur = 0; let totalAll = 0;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="color:var(--text-sec);">Belum ada data di periode ini.</td></tr>`;
+            } else {
+                filtered.forEach(d => {
+                    if (d.status === 'Hadir' || d.status === 'Lembur') totalHadir++;
+                    totalReg += d.jamReguler;
+                    totalLembur += d.jamLembur;
+                    totalAll += d.totalJam;
+
+                    // Parse tanggal untuk tampilan ringkas (misal: 22 Okt)
+                    const dateObj = new Date(d.tanggal);
+                    const tglSort = `${String(dateObj.getDate()).padStart(2,'0')} ${BULAN_NAMES[dateObj.getMonth()].substring(0,3)}`;
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${tglSort}</td>
+                            <td>${d.hari}</td>
+                            <td>${d.status}</td>
+                            <td class="text-center">${d.jamReguler}</td>
+                            <td class="text-center">${d.jamLembur}</td>
+                            <td class="text-center" style="color:var(--accent-light); font-weight:bold;">${d.totalJam}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            document.getElementById('sum-hari').innerText = totalHadir;
+            document.getElementById('sum-reguler').innerText = totalReg;
+            document.getElementById('sum-lembur').innerText = totalLembur;
+            document.getElementById('sum-total').innerText = t
