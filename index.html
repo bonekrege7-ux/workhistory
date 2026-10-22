@@ -75,6 +75,9 @@
         .btn-outline { width: 100%; padding: 14px; background: transparent; border: 1px solid var(--text-sec); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s; margin-top: 10px; font-size: 1rem; }
         .btn-outline:hover { background: var(--btn-bg); }
 
+        .btn-edit { background: var(--btn-bg); color: var(--text-main); border: 1px solid var(--text-sec); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
+        .btn-edit:hover { background: #FFFFFF; color: #000000; }
+
         /* ================= HISTORY & CALENDAR ================= */
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .summary-box { background: var(--bg-card); border: 1px solid var(--border); padding: 15px; border-radius: 8px; text-align: center; }
@@ -82,18 +85,18 @@
         .summary-box strong { font-size: 1.5rem; }
 
         .table-container { overflow-x: auto; margin-bottom: 25px; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; min-width: 550px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; white-space: nowrap; }
         th { color: var(--text-sec); font-weight: 600; }
         .text-center { text-align: center; }
 
         /* Custom Calendar Detail */
         .cal-header-row { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.85rem; color: var(--text-sec); margin-bottom: 5px; font-weight: bold; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-        .cal-cell { aspect-ratio: 1; background: var(--btn-bg); border-radius: 6px; display: flex; align-items: center; justify-content: center; position: relative; font-size: 0.95rem; font-weight: bold; overflow: hidden; }
-        .cal-cell.empty { background: transparent; }
+        .cal-cell { aspect-ratio: 1; background: var(--btn-bg); border-radius: 6px; display: flex; align-items: center; justify-content: center; position: relative; font-size: 0.95rem; font-weight: bold; overflow: hidden; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; user-select: none; }
+        .cal-cell:not(.empty):hover { transform: scale(1.08); z-index: 2; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .cal-cell.empty { background: transparent; cursor: default; }
         
-        /* Calendar Status Colors */
         .cal-present { background: var(--cal-present) !important; color: #fff; }
         .cal-absent { background: var(--cal-absent) !important; color: #fff; }
         .cal-leave { background: var(--cal-leave) !important; color: #000; }
@@ -103,6 +106,20 @@
         .cal-legend { display: flex; flex-wrap: wrap; gap: 15px; font-size: 0.8rem; margin-top: 15px; color: var(--text-sec); justify-content: center; }
         .legend-item { display: flex; align-items: center; gap: 5px; }
         .legend-box { width: 12px; height: 12px; border-radius: 2px; }
+
+        /* ================= MODAL OVERLAY ================= */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content { width: 100%; max-width: 450px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; transform: translateY(20px); transition: 0.3s; }
+        .modal-overlay.show .modal-content { transform: translateY(0); }
+        .close-modal { background: none; border: none; color: var(--text-sec); font-size: 1.5rem; cursor: pointer; }
+        .close-modal:hover { color: var(--text-main); }
+
+        /* Detail List Item inside Modal */
+        .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: var(--text-sec); }
+        .detail-val { font-weight: bold; text-align: right; }
 
         .d-none { display: none !important; }
     </style>
@@ -170,7 +187,8 @@
 
             <!-- Detailed Calendar UI -->
             <div class="card">
-                <h3 style="margin-bottom: 15px; font-size: 1.1rem;">Calendar Details</h3>
+                <h3 style="margin-bottom: 5px; font-size: 1.1rem;">Calendar Details</h3>
+                <p style="color: var(--text-sec); font-size: 0.8rem; margin-bottom: 15px;">Tap on any date cell to view specific schedule details.</p>
                 <div class="cal-header-row">
                     <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
                 </div>
@@ -200,6 +218,7 @@
                                 <th class="text-center">Reg</th>
                                 <th class="text-center">OT</th>
                                 <th class="text-center">Total</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody id="history-body"></tbody>
@@ -223,12 +242,40 @@
                 <div class="screen-title">ABOUT</div>
             </div>
             <div class="card text-center" style="padding: 40px 20px;">
-                <h2 style="margin-bottom: 10px;">Zhee Work Schedule</h2>
-                <p style="color: var(--text-sec); margin-bottom: 20px; font-size: 0.95rem;">Version 2.0 (Dark Edition)<br>Designed for mobile & desktop.</p>
-                <p style="color: var(--text-sec); font-size: 0.9rem;">Features automatic cut-off calculations (26th - 25th), dynamic UI, and local permanent storage.</p>
+                <h2 style="margin-bottom: 10px;">Work Schedule</h2>
+                <p style="color: var(--text-sec); margin-bottom: 20px; font-size: 0.95rem;">Version 2.2 (Dark Edition)<br>Designed for mobile & desktop.</p>
+                <p style="color: var(--text-sec); font-size: 0.9rem;">Features automatic cut-off calculations (26th - 25th), dynamic UI, interactive tap-to-view calendar, editable history, and local permanent storage.</p>
             </div>
         </div>
 
+    </div>
+
+    <!-- ================= EDIT MODAL ================= -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="font-size: 1.2rem;">Edit Record</h3>
+                <button class="close-modal" onclick="closeEditModal()">✖</button>
+            </div>
+            <p id="edit-date-display" style="color:var(--text-sec); font-size: 0.9rem; margin-bottom: 20px;"></p>
+            
+            <div id="edit-form-inputs"></div>
+        </div>
+    </div>
+
+    <!-- ================= CALENDAR DAY DETAIL MODAL ================= -->
+    <div id="day-detail-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="font-size: 1.2rem;">Date Schedule Info</h3>
+                <button class="close-modal" onclick="closeDayDetailModal()">✖</button>
+            </div>
+            <p id="detail-date-display" style="color:var(--text-sec); font-size: 0.9rem; margin-bottom: 15px;"></p>
+            
+            <div id="detail-content-body"></div>
+
+            <button class="btn-primary" onclick="closeDayDetailModal()" style="margin-top: 20px;">Close</button>
+        </div>
     </div>
 
     <script>
@@ -419,14 +466,13 @@
             const tbody = document.getElementById('history-body');
             tbody.innerHTML = '';
 
-            // Render Table & Summary
             let filtered = db.filter(d => d.periode === activePeriod);
             filtered.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 
             let totalHadir = 0; let totalReg = 0; let totalLembur = 0; let totalAll = 0;
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="color:var(--text-sec); padding: 20px;">No records found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:var(--text-sec); padding: 20px;">No records found.</td></tr>`;
             } else {
                 filtered.forEach(d => {
                     if (d.status === 'Present' || d.status === 'Overtime') totalHadir++;
@@ -449,6 +495,7 @@
                             <td class="text-center">${d.jamReguler > 0 ? d.jamReguler : '-'}</td>
                             <td class="text-center">${d.jamLembur > 0 ? d.jamLembur : '-'}</td>
                             <td class="text-center" style="font-weight:bold;">${d.totalJam > 0 ? d.totalJam : '-'}</td>
+                            <td class="text-center"><button class="btn-edit" onclick="openEditModal('${d.id}')">Edit</button></td>
                         </tr>
                     `;
                 });
@@ -459,7 +506,6 @@
             document.getElementById('sum-lembur').innerText = totalLembur;
             document.getElementById('sum-total').innerText = totalAll;
 
-            // Render Calendar View based on active period's month
             const [selYear, selMonth] = activePeriod.split('-');
             renderCalendar(parseInt(selYear), parseInt(selMonth));
         }
@@ -468,18 +514,14 @@
             const calGrid = document.getElementById('calendar-grid');
             calGrid.innerHTML = '';
             
-            // Note: Month in JS Date is 0-indexed (0 = Jan). So month - 1
             const firstDay = new Date(year, month - 1, 1).getDay(); 
             const daysInMonth = new Date(year, month, 0).getDate();
             
-            // Empty cells for alignment
             for(let i=0; i<firstDay; i++) {
                 calGrid.innerHTML += `<div class="cal-cell empty"></div>`;
             }
             
             const db = getDB();
-            
-            // Fill days
             for(let d=1; d<=daysInMonth; d++) {
                 const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 const record = db.find(r => r.id === dateStr);
@@ -498,8 +540,195 @@
                     }
                 }
                 
-                calGrid.innerHTML += `<div class="${classes}">${innerHtml}</div>`;
+                calGrid.innerHTML += `<div class="${classes}" onclick="openDayDetailModal('${dateStr}')">${innerHtml}</div>`;
             }
+        }
+
+        /* ================= DAY DETAIL MODAL LOGIC ================= */
+        function openDayDetailModal(dateStr) {
+            const db = getDB();
+            const record = db.find(d => d.id === dateStr);
+            const dateObj = new Date(dateStr);
+            const hariInt = dateObj.getDay();
+            
+            document.getElementById('detail-date-display').innerText = `${HARI_NAMES[hariInt]}, ${dateObj.getDate()} ${BULAN_NAMES[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+            
+            const container = document.getElementById('detail-content-body');
+
+            if (!record) {
+                container.innerHTML = `
+                    <div class="detail-row">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-val" style="color:var(--text-sec)">No Record Recorded</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Work Schedule</span>
+                        <span class="detail-val">-</span>
+                    </div>
+                `;
+            } else {
+                let regScheduleStr = "-";
+                let otScheduleStr = "-";
+
+                // Determine Regular Schedule Time
+                if (record.status === 'Present') {
+                    if (hariInt >= 1 && hariInt <= 5) regScheduleStr = "08:00 - 16:00 (8.0 Hours)";
+                    else if (hariInt === 6) regScheduleStr = "08:00 - 13:00 (5.0 Hours)";
+                }
+
+                // Determine Overtime Schedule Time
+                if (record.isLembur) {
+                    if (hariInt >= 1 && hariInt <= 5) otScheduleStr = "16:00 - 19:30 (+3.5 Hours)";
+                    else if (hariInt === 6) otScheduleStr = "13:00 - 15:00 (+2.0 Hours)";
+                    else if (hariInt === 0) {
+                        if (record.jamLembur === 3) otScheduleStr = "13:00 - 16:00 (3.0 Hours)";
+                        else if (record.jamLembur === 7) otScheduleStr = "13:00 - 20:00 (7.0 Hours)";
+                    }
+                }
+
+                let statusColor = "var(--text-main)";
+                if(record.status === 'Absent') statusColor = "var(--cal-absent)";
+                else if(record.status === 'Sick' || record.status === 'Leave') statusColor = "var(--cal-leave)";
+                else if(record.status === 'Present') statusColor = "var(--cal-present)";
+                else if(record.status === 'Overtime' && record.hari === 'Sunday') statusColor = "var(--cal-sunday)";
+
+                container.innerHTML = `
+                    <div class="detail-row">
+                        <span class="detail-label">Attendance Status</span>
+                        <span class="detail-val" style="color:${statusColor}">${record.status}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Regular Hours Time</span>
+                        <span class="detail-val">${regScheduleStr}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Overtime Hours Time</span>
+                        <span class="detail-val">${otScheduleStr}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Regular Duration</span>
+                        <span class="detail-val">${record.jamReguler} Hours</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Overtime Duration</span>
+                        <span class="detail-val">${record.jamLembur} Hours</span>
+                    </div>
+                    <div class="detail-row" style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px;">
+                        <span class="detail-label" style="color:var(--text-main); font-weight:bold;">Total Accumulation</span>
+                        <span class="detail-val" style="font-size:1.1rem; color:var(--text-main);">${record.totalJam} Hours</span>
+                    </div>
+                `;
+            }
+
+            document.getElementById('day-detail-modal').classList.add('show');
+        }
+
+        function closeDayDetailModal() {
+            document.getElementById('day-detail-modal').classList.remove('show');
+        }
+
+        /* ================= EDIT MODAL LOGIC ================= */
+        function openEditModal(dateStr) {
+            const db = getDB();
+            const record = db.find(d => d.id === dateStr);
+            if (!record) return;
+
+            const dateObj = new Date(record.tanggal);
+            const hariInt = dateObj.getDay();
+
+            document.getElementById('edit-date-display').innerText = `${record.hari}, ${dateObj.getDate()} ${BULAN_NAMES[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+
+            let html = '';
+            if (hariInt >= 1 && hariInt <= 6) {
+                html += `
+                    <label>Attendance Status</label>
+                    <select id="edit-input-status" onchange="toggleEditLembur()">
+                        <option value="Present" ${record.status === 'Present' ? 'selected' : ''}>Present (Masuk)</option>
+                        <option value="Absent" ${record.status === 'Absent' ? 'selected' : ''}>Absent (Tidak Masuk)</option>
+                        <option value="Sick" ${record.status === 'Sick' ? 'selected' : ''}>Sick (Sakit)</option>
+                        <option value="Leave" ${record.status === 'Leave' ? 'selected' : ''}>Permitted Leave (Izin)</option>
+                    </select>
+                    <div id="edit-lembur-wrapper" class="${record.status === 'Present' ? '' : 'd-none'}">
+                        <label>Overtime?</label>
+                        <select id="edit-input-lembur">
+                            <option value="No" ${!record.isLembur ? 'selected' : ''}>No (Regular hours)</option>
+                            <option value="Yes" ${record.isLembur ? 'selected' : ''}>Yes (Overtime)</option>
+                        </select>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <label>Sunday Overtime?</label>
+                    <select id="edit-input-status-minggu" onchange="toggleEditLemburMinggu()">
+                        <option value="No" ${!record.isLembur ? 'selected' : ''}>No (Full Holiday)</option>
+                        <option value="Yes" ${record.isLembur ? 'selected' : ''}>Yes (Working on Sunday)</option>
+                    </select>
+                    <div id="edit-opsi-lembur-minggu" class="${record.isLembur ? '' : 'd-none'}">
+                        <label>Select Duration</label>
+                        <select id="edit-input-durasi-minggu">
+                            <option value="3" ${record.jamLembur === 3 ? 'selected' : ''}>Option A: 13:00 - 16:00 (3 Hours)</option>
+                            <option value="7" ${record.jamLembur === 7 ? 'selected' : ''}>Option B: 13:00 - 20:00 (7 Hours)</option>
+                        </select>
+                    </div>
+                `;
+            }
+            html += `<button class="btn-primary" onclick="saveEdit('${dateStr}', ${hariInt})" style="margin-top:20px;">Save Changes</button>`;
+            
+            document.getElementById('edit-form-inputs').innerHTML = html;
+            document.getElementById('edit-modal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('show');
+        }
+
+        function toggleEditLembur() {
+            const status = document.getElementById('edit-input-status').value;
+            const lemburWrap = document.getElementById('edit-lembur-wrapper');
+            if (status === 'Present') { lemburWrap.classList.remove('d-none'); } 
+            else { lemburWrap.classList.add('d-none'); document.getElementById('edit-input-lembur').value = 'No'; }
+        }
+
+        function toggleEditLemburMinggu() {
+            const isLembur = document.getElementById('edit-input-status-minggu').value;
+            const opsiWrap = document.getElementById('edit-opsi-lembur-minggu');
+            if (isLembur === 'Yes') { opsiWrap.classList.remove('d-none'); } 
+            else { opsiWrap.classList.add('d-none'); }
+        }
+
+        function saveEdit(dateStr, hariInt) {
+            let jamReguler = 0; let jamLembur = 0; let isLembur = false; let statusLaporan = "";
+
+            if (hariInt >= 1 && hariInt <= 6) {
+                const status = document.getElementById('edit-input-status').value;
+                const lemburSelect = document.getElementById('edit-input-lembur').value;
+                statusLaporan = status;
+                
+                if (status === 'Present') {
+                    jamReguler = (hariInt === 6) ? 5 : 8; 
+                    if (lemburSelect === 'Yes') { isLembur = true; jamLembur = (hariInt === 6) ? 2 : 3.5; }
+                }
+            } else if (hariInt === 0) {
+                const isLemburSelect = document.getElementById('edit-input-status-minggu').value;
+                if (isLemburSelect === 'Yes') {
+                    statusLaporan = "Overtime"; isLembur = true;
+                    jamLembur = parseFloat(document.getElementById('edit-input-durasi-minggu').value);
+                } else { statusLaporan = "Holiday"; }
+            }
+
+            let db = getDB();
+            let index = db.findIndex(d => d.id === dateStr);
+            if (index !== -1) {
+                db[index].status = statusLaporan;
+                db[index].jamReguler = jamReguler;
+                db[index].isLembur = isLembur;
+                db[index].jamLembur = jamLembur;
+                db[index].totalJam = jamReguler + jamLembur;
+                saveDB(db);
+            }
+
+            closeEditModal();
+            renderHistory();
         }
 
         /* ================= EXPORT / IMPORT ================= */
