@@ -42,50 +42,76 @@
 
         /* ================= RESET & BASE ================= */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.6; }
+        body { background-color: var(--bg-main); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
         
+        /* ================= ANIMATIONS ================= */
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 5px rgba(157, 78, 221, 0.4); }
+            50% { box-shadow: 0 0 20px rgba(157, 78, 221, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(157, 78, 221, 0.4); }
+        }
+
         /* ================= LAYOUT & UI ================= */
         header { padding: 20px; text-align: center; border-bottom: 1px solid var(--border-card); background: var(--bg-card); position: sticky; top: 0; z-index: 100; }
-        header h1 { font-size: 1.5rem; background: var(--grad-btn); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header h1 { font-size: 1.5rem; background: var(--grad-btn); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
         
-        .nav-tabs { display: flex; justify-content: center; background: var(--bg-card); border-bottom: 1px solid var(--border-card); }
-        .tab-btn { flex: 1; padding: 15px; background: none; border: none; color: var(--text-sec); font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .tab-btn.active { color: var(--text-main); border-bottom: 3px solid var(--accent-light); background: rgba(123, 44, 191, 0.1); }
+        .nav-tabs { display: flex; justify-content: space-around; background: var(--bg-card); border-bottom: 1px solid var(--border-card); position: sticky; top: 68px; z-index: 99;}
+        .tab-btn { flex: 1; padding: 15px; background: none; border: none; color: var(--text-sec); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: 0.3s; position: relative; }
+        .tab-btn::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 3px; background: var(--accent-light); transition: width 0.3s ease; }
+        .tab-btn:hover { color: var(--text-main); background: rgba(123, 44, 191, 0.05); }
+        .tab-btn.active { color: var(--text-main); background: rgba(123, 44, 191, 0.15); }
+        .tab-btn.active::after { width: 100%; }
         
         main { padding: 20px; max-width: 600px; margin: 0 auto; }
-        .section { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .section { display: none; animation: slideUpFade 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
         .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ================= CARDS & FORMS ================= */
-        .card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .card-header { font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; color: var(--accent-light); }
+        .card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.6); }
+        .card-header { font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; color: var(--accent-light); display: flex; justify-content: space-between; align-items: center; }
         
         label { display: block; margin-bottom: 8px; color: var(--text-sec); font-size: 0.95rem; }
-        select, input[type="file"] { width: 100%; padding: 12px; margin-bottom: 20px; background: var(--bg-main); border: 1px solid var(--border-card); color: var(--text-main); border-radius: 8px; font-size: 1rem; }
-        select:focus { outline: none; border-color: var(--accent-light); }
+        select, input[type="file"] { width: 100%; padding: 14px; margin-bottom: 20px; background: var(--bg-main); border: 1px solid var(--border-card); color: var(--text-main); border-radius: 10px; font-size: 1rem; transition: all 0.3s ease; appearance: none; }
+        select:focus { outline: none; border-color: var(--accent-light); box-shadow: 0 0 10px rgba(157, 78, 221, 0.3); }
         
-        .btn { width: 100%; padding: 14px; background: var(--grad-btn); border: none; border-radius: 8px; color: #fff; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); opacity: 0.9; }
+        .btn { width: 100%; padding: 16px; background: var(--grad-btn); border: none; border-radius: 10px; color: #fff; font-weight: bold; font-size: 1.05rem; cursor: pointer; transition: all 0.3s ease; }
+        .btn:hover { box-shadow: 0 5px 15px rgba(108, 92, 231, 0.5); transform: translateY(-2px); }
+        .btn:active { transform: scale(0.96); box-shadow: none; }
+        
         .btn-outline { background: transparent; border: 1px solid var(--accent-light); color: var(--accent-light); margin-top: 10px; }
-        .btn-outline:active { background: rgba(157, 78, 221, 0.1); }
+        .btn-outline:hover { background: rgba(157, 78, 221, 0.15); box-shadow: 0 0 15px rgba(157, 78, 221, 0.2); }
+        
+        .btn-glow { animation: pulseGlow 2s infinite; }
+
+        /* ================= HOME DASHBOARD SPECIFIC ================= */
+        .welcome-title { font-size: 1.8rem; margin-bottom: 5px; color: #fff; }
+        .clock-display { font-size: 2.5rem; font-weight: 800; color: var(--accent-light); letter-spacing: 2px; text-shadow: 0 0 10px rgba(157, 78, 221, 0.5); margin: 10px 0; }
+        .date-display-home { font-size: 1rem; color: var(--text-sec); margin-bottom: 20px; }
+        .status-badge { display: inline-block; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; margin-bottom: 15px; }
+        .badge-pending { background: rgba(255, 165, 0, 0.2); color: #FFA500; border: 1px solid #FFA500; }
+        .badge-done { background: rgba(46, 204, 113, 0.2); color: #2ECC71; border: 1px solid #2ECC71; }
 
         /* ================= HISTORY & TABLES ================= */
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .summary-box { background: var(--bg-main); border: 1px solid var(--border-card); padding: 15px; border-radius: 8px; text-align: center; }
-        .summary-box span { display: block; font-size: 0.8rem; color: var(--text-sec); }
-        .summary-box strong { font-size: 1.2rem; color: var(--accent-light); }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .summary-box { background: linear-gradient(145deg, var(--bg-card), var(--bg-main)); border: 1px solid var(--border-card); padding: 20px; border-radius: 12px; text-align: center; transition: transform 0.3s; }
+        .summary-box:hover { transform: scale(1.05); border-color: var(--accent-light); }
+        .summary-box span { display: block; font-size: 0.85rem; color: var(--text-sec); margin-bottom: 5px; }
+        .summary-box strong { font-size: 1.5rem; color: var(--accent-light); text-shadow: 0 0 8px rgba(157, 78, 221, 0.3); }
 
-        .table-container { overflow-x: auto; }
+        .table-container { overflow-x: auto; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-card); font-size: 0.9rem; }
-        th { color: var(--accent-light); font-weight: 600; background: rgba(36, 20, 66, 0.5); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-card); font-size: 0.95rem; transition: background 0.2s; }
+        th { color: var(--accent-light); font-weight: 600; background: rgba(36, 20, 66, 0.6); position: sticky; top: 0; }
         td { color: var(--text-main); }
+        tbody tr:hover { background: rgba(123, 44, 191, 0.1); cursor: default; }
         .text-center { text-align: center; }
         
-        /* Hidden UI utilities */
         .d-none { display: none !important; }
-        #date-display { text-align: center; margin-bottom: 20px; font-size: 1.2rem; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -95,51 +121,74 @@
     </header>
 
     <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('presensi')">PRESENSI</button>
+        <button class="tab-btn active" onclick="switchTab('home')">HOME</button>
+        <button class="tab-btn" onclick="switchTab('presensi')">PRESENSI</button>
         <button class="tab-btn" onclick="switchTab('riwayat')">RIWAYAT</button>
     </div>
 
     <main>
-        <!-- ================= HALAMAN PRESENSI ================= -->
-        <section id="presensi" class="section active">
-            <div id="date-display"></div>
+        <!-- ================= HALAMAN HOME (DASHBOARD) ================= -->
+        <section id="home" class="section active">
+            <div class="card text-center" style="padding: 40px 20px;">
+                <h2 class="welcome-title">Halo, Zee May! 👋</h2>
+                <div class="clock-display" id="realtime-clock">00:00:00</div>
+                <div class="date-display-home" id="realtime-date">Memuat tanggal...</div>
+                
+                <div id="home-status-container">
+                    <!-- Diinjeksi oleh JS -->
+                </div>
+            </div>
             
-            <div class="card" id="form-container">
+            <div class="card">
+                <div class="card-header">Info Sistem Tutup Buku</div>
+                <p style="font-size: 0.9rem; color: var(--text-sec);">Siklus bulanan dihitung mulai dari <strong>tanggal 26</strong> bulan sebelumnya hingga <strong>tanggal 25</strong> bulan berjalan. Sistem akan memisahkan periode secara otomatis.</p>
+            </div>
+        </section>
+
+        <!-- ================= HALAMAN PRESENSI ================= -->
+        <section id="presensi" class="section">
+            <div class="card text-center" style="padding-bottom: 10px; border-bottom: none; border-radius: 16px 16px 0 0; margin-bottom: 0;">
+                <h3 style="color: var(--accent-light);" id="presensi-date-title">Form Presensi</h3>
+                <p style="color: var(--text-sec); font-size: 0.9rem;" id="presensi-date-subtitle"></p>
+            </div>
+            
+            <div class="card" id="form-container" style="border-radius: 0 0 16px 16px; border-top: none;">
                 <!-- Form akan di-generate oleh JavaScript di sini -->
             </div>
 
-            <div class="card d-none" id="done-container">
-                <div class="card-header text-center">Presensi Hari Ini Selesai</div>
-                <p class="text-center" style="color: var(--text-sec); margin-bottom: 15px;">Kamu sudah mengisi presensi untuk hari ini.</p>
-                <button class="btn btn-outline" onclick="resetTodayForm()">Edit Presensi Hari Ini</button>
+            <div class="card d-none" id="done-container" style="border-radius: 0 0 16px 16px; border-top: none; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 10px;">✅</div>
+                <div class="card-header" style="justify-content: center;">Presensi Tersimpan</div>
+                <p style="color: var(--text-sec); margin-bottom: 20px;">Data kehadiranmu untuk hari ini sudah direkap ke dalam sistem.</p>
+                <button class="btn btn-outline" onclick="resetTodayForm()">Edit Ulang Presensi</button>
             </div>
         </section>
 
         <!-- ================= HALAMAN RIWAYAT ================= -->
         <section id="riwayat" class="section">
-            <div class="card">
-                <label for="filter-periode">Pilih Periode Bulan</label>
-                <select id="filter-periode" onchange="renderHistory()"></select>
+            <div class="card" style="display: flex; flex-direction: column; gap: 10px;">
+                <label for="filter-periode" style="margin-bottom: 0;">Filter Periode Bulan</label>
+                <select id="filter-periode" onchange="renderHistory()" style="margin-bottom: 0;"></select>
             </div>
 
             <div class="summary-grid">
-                <div class="summary-box"><span>Hari Kerja</span><strong id="sum-hari">0</strong></div>
+                <div class="summary-box"><span>Hari Hadir</span><strong id="sum-hari">0</strong></div>
                 <div class="summary-box"><span>Jam Reguler</span><strong id="sum-reguler">0</strong></div>
                 <div class="summary-box"><span>Jam Lembur</span><strong id="sum-lembur">0</strong></div>
-                <div class="summary-box"><span>Total Jam</span><strong id="sum-total">0</strong></div>
+                <div class="summary-box"><span>Total Akumulasi</span><strong id="sum-total">0</strong></div>
             </div>
 
-            <div class="card">
-                <div class="card-header">Detail Presensi</div>
-                <div class="table-container">
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div class="card-header" style="padding: 20px 20px 0 20px;">Tabel Detail Kehadiran</div>
+                <div class="table-container" style="padding: 0 20px 20px 20px;">
                     <table>
                         <thead>
                             <tr>
-                                <th>Tgl</th>
+                                <th>Tanggal</th>
                                 <th>Hari</th>
                                 <th>Status</th>
                                 <th class="text-center">Reg</th>
-                                <th class="text-center">Lembur</th>
+                                <th class="text-center">Lbr</th>
                                 <th class="text-center">Total</th>
                             </tr>
                         </thead>
@@ -151,23 +200,22 @@
             </div>
 
             <div class="card">
-                <div class="card-header">Backup & Restore</div>
-                <button class="btn" onclick="exportData()" style="margin-bottom:15px;">Export Data (JSON)</button>
-                <label style="margin-bottom:5px;">Import Data (JSON):</label>
+                <div class="card-header">Manajemen Data</div>
+                <p style="font-size: 0.85rem; color: var(--text-sec); margin-bottom: 15px;">Simpan file backup JSON ke memori HP agar data tidak hilang saat membersihkan cache.</p>
+                <button class="btn" onclick="exportData()" style="margin-bottom:20px;">📥 Download Backup (.json)</button>
+                
+                <label>Pulihkan Data (Restore):</label>
                 <input type="file" id="import-file" accept=".json">
-                <button class="btn btn-outline" onclick="importData()">Restore Data</button>
+                <button class="btn btn-outline" onclick="importData()">🔄 Proses Restore</button>
             </div>
         </section>
     </main>
 
     <script>
         /* ================= CORE UTILITIES & PWA ================= */
-        // Basic Service Worker untuk memenuhi kriteria PWA
         const swCode = `self.addEventListener('install', (e) => { e.waitUntil(self.skipWaiting()); }); self.addEventListener('activate', (e) => { e.waitUntil(self.clients.claim()); }); self.addEventListener('fetch', (e) => {});`;
         const swBlob = new Blob([swCode], {type: 'application/javascript'});
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(console.error);
-        }
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(console.error); }
 
         const DB_KEY = 'zhee_schedule_data';
         const HARI_NAMES = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -176,17 +224,21 @@
         function getDB() { return JSON.parse(localStorage.getItem(DB_KEY) || '[]'); }
         function saveDB(data) { localStorage.setItem(DB_KEY, JSON.stringify(data)); }
 
-        // Navigasi Tab
+        // Navigasi Tab dengan Interaksi Animasi
         function switchTab(tabId) {
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
+            
             if (tabId === 'riwayat') updateFilterDropdown();
+            if (tabId === 'home' || tabId === 'presensi') initAppLogic();
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        /* ================= DATE & LOGIC ENGINE ================= */
-        // Menentukan Periode berdasarkan tanggal tutup buku (Tgl 25)
+        /* ================= DATE, CLOCK & LOGIC ENGINE ================= */
         function getPeriode(dateObj) {
             let year = dateObj.getFullYear();
             let month = dateObj.getMonth() + 1;
@@ -194,48 +246,76 @@
             if (date > 25) { month += 1; if (month > 12) { month = 1; year += 1; } }
             return `${year}-${String(month).padStart(2, '0')}`;
         }
-
         function formatPeriodeName(periodeStr) {
             const [y, m] = periodeStr.split('-');
-            return `${BULAN_NAMES[parseInt(m)-1]} ${y}`;
+            return `${BULAN_NAMES[parseInt(m)-1]}${y}`;
         }
 
-        /* ================= PRESENSI MODULE ================= */
-        function initPresensi() {
+        // Live Clock Update
+        function startRealtimeClock() {
+            setInterval(() => {
+                const now = new Date();
+                const h = String(now.getHours()).padStart(2, '0');
+                const m = String(now.getMinutes()).padStart(2, '0');
+                const s = String(now.getSeconds()).padStart(2, '0');
+                document.getElementById('realtime-clock').innerText = `${h}:${m}:${s}`;
+            }, 1000);
+        }
+
+        /* ================= APP INITIALIZATION ================= */
+        function initAppLogic() {
             const now = new Date();
             const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
             const hariInt = now.getDay();
+            const fullDateText = `${HARI_NAMES[hariInt]},${now.getDate()} ${BULAN_NAMES[now.getMonth()]}${now.getFullYear()}`;
             
-            document.getElementById('date-display').innerText = `${HARI_NAMES[hariInt]}, ${now.getDate()} ${BULAN_NAMES[now.getMonth()]} ${now.getFullYear()}`;
+            // Set Tanggal di UI
+            document.getElementById('realtime-date').innerText = fullDateText;
+            document.getElementById('presensi-date-subtitle').innerText = fullDateText;
 
             const db = getDB();
             const alreadyFilled = db.find(d => d.id === todayStr);
 
+            // Logic untuk Home Dashboard Status
+            const homeStatusBox = document.getElementById('home-status-container');
             if (alreadyFilled) {
+                homeStatusBox.innerHTML = `
+                    <div class="status-badge badge-done">✔ Presensi Selesai</div>
+                    <p style="color: var(--text-sec); font-size: 0.95rem; margin-bottom: 20px;">Kamu sudah mencatat kehadiranmu hari ini (<strong>${alreadyFilled.status}</strong>).</p>
+                    <button class="btn btn-outline" onclick="switchTab('riwayat'); document.querySelectorAll('.tab-btn')[2].classList.add('active'); document.querySelectorAll('.tab-btn')[0].classList.remove('active');">Lihat Riwayat</button>
+                `;
+                
+                // Atur form tab Presensi ke status Selesai
                 document.getElementById('form-container').classList.add('d-none');
                 document.getElementById('done-container').classList.remove('d-none');
             } else {
+                homeStatusBox.innerHTML = `
+                    <div class="status-badge badge-pending">! Menunggu Presensi</div>
+                    <p style="color: var(--text-sec); font-size: 0.95rem; margin-bottom: 20px;">Jangan lupa isi jam kerjamu sebelum hari berakhir ya.</p>
+                    <button class="btn btn-glow" onclick="switchTab('presensi'); document.querySelectorAll('.tab-btn')[1].classList.add('active'); document.querySelectorAll('.tab-btn')[0].classList.remove('active');">✏️ Isi Presensi Sekarang</button>
+                `;
+                
+                // Generate form kosong di tab Presensi
                 renderFormContent(hariInt, todayStr);
             }
         }
 
         function resetTodayForm() {
             document.getElementById('done-container').classList.add('d-none');
-            document.getElementById('form-container').classList.remove('d-none');
             const now = new Date();
             const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
             renderFormContent(now.getDay(), todayStr);
         }
 
+        /* ================= FORM PRESENSI MODULE ================= */
         function renderFormContent(hariInt, dateStr) {
             const container = document.getElementById('form-container');
             container.classList.remove('d-none');
-            let html = `<div class="card-header">Input Kehadiran</div>`;
+            let html = ``;
 
             if (hariInt >= 1 && hariInt <= 6) { 
-                // Senin - Sabtu
                 html += `
-                    <label>Status Hari Ini</label>
+                    <label>Status Kehadiran</label>
                     <select id="input-status" onchange="toggleLemburReguler(${hariInt})">
                         <option value="Hadir">Masuk Kerja</option>
                         <option value="Tidak">Tidak Masuk</option>
@@ -243,19 +323,18 @@
                         <option value="Izin">Izin</option>
                     </select>
                     <div id="lembur-wrapper">
-                        <label>Lembur?</label>
+                        <label>Apakah ada tambahan Lembur?</label>
                         <select id="input-lembur">
-                            <option value="Tidak">Tidak</option>
-                            <option value="Ya">Ya (Lembur)</option>
+                            <option value="Tidak">Tidak, jam normal saja</option>
+                            <option value="Ya">Ya, saya Lembur</option>
                         </select>
                     </div>`;
             } else if (hariInt === 0) { 
-                // Minggu
                 html += `
-                    <label>Lembur Hari Ini? (Minggu)</label>
+                    <label>Masuk Lembur Hari Minggu?</label>
                     <select id="input-status-minggu" onchange="toggleLemburMinggu()">
-                        <option value="Tidak">Tidak</option>
-                        <option value="Ya">Ya, Saya Lembur</option>
+                        <option value="Tidak">Tidak, libur penuh</option>
+                        <option value="Ya">Ya, ada panggilan lembur</option>
                     </select>
                     <div id="opsi-lembur-minggu" class="d-none">
                         <label>Pilih Durasi Lembur</label>
@@ -266,7 +345,7 @@
                     </div>`;
             }
 
-            html += `<button class="btn" onclick="simpanPresensi(${hariInt}, '${dateStr}')" style="margin-top:20px;">Simpan Presensi</button>`;
+            html += `<button class="btn" onclick="simpanPresensi(${hariInt}, '${dateStr}')" style="margin-top:15px;">Simpan Presensi</button>`;
             container.innerHTML = html;
         }
 
@@ -294,21 +373,15 @@
                 statusLaporan = status;
                 
                 if (status === 'Hadir') {
-                    jamReguler = (hariInt === 6) ? 5 : 8; // Sabtu 5 jam, Senin-Jumat 8 Jam
-                    if (lemburSelect === 'Ya') {
-                        isLembur = true;
-                        jamLembur = (hariInt === 6) ? 2 : 3.5;
-                    }
+                    jamReguler = (hariInt === 6) ? 5 : 8; 
+                    if (lemburSelect === 'Ya') { isLembur = true; jamLembur = (hariInt === 6) ? 2 : 3.5; }
                 }
             } else if (hariInt === 0) {
                 const isLemburSelect = document.getElementById('input-status-minggu').value;
                 if (isLemburSelect === 'Ya') {
-                    statusLaporan = "Lembur";
-                    isLembur = true;
+                    statusLaporan = "Lembur"; isLembur = true;
                     jamLembur = parseFloat(document.getElementById('input-durasi-minggu').value);
-                } else {
-                    statusLaporan = "Libur";
-                }
+                } else { statusLaporan = "Libur"; }
             }
 
             const payload = {
@@ -324,15 +397,18 @@
             };
 
             let db = getDB();
-            db = db.filter(d => d.id !== dateStr); // Hapus jika sudah ada (Replace)
+            db = db.filter(d => d.id !== dateStr); 
             db.push(payload);
             saveDB(db);
             
-            initPresensi(); // Refresh UI
-            if(document.getElementById('riwayat').classList.contains('active')) updateFilterDropdown();
+            initAppLogic(); 
+            // Otomatis pindah ke home untuk melihat feedback hijau
+            switchTab('home');
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.remove('active');
         }
 
-        /* ================= RIWAYAT MODULE ================= */
+        /* ================= RIWAYAT & FILTER MODULE ================= */
         function updateFilterDropdown() {
             const db = getDB();
             const select = document.getElementById('filter-periode');
@@ -343,9 +419,7 @@
                 const currentPeriod = getPeriode(new Date());
                 select.innerHTML = `<option value="${currentPeriod}">${formatPeriodeName(currentPeriod)}</option>`;
             } else {
-                periods.forEach(p => {
-                    select.innerHTML += `<option value="${p}">${formatPeriodeName(p)}</option>`;
-                });
+                periods.forEach(p => { select.innerHTML += `<option value="${p}">${formatPeriodeName(p)}</option>`; });
             }
             renderHistory();
         }
@@ -357,13 +431,12 @@
             tbody.innerHTML = '';
 
             let filtered = db.filter(d => d.periode === activePeriod);
-            // Sort ascending by date
             filtered.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 
             let totalHadir = 0; let totalReg = 0; let totalLembur = 0; let totalAll = 0;
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="color:var(--text-sec);">Belum ada data di periode ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="color:var(--text-sec); padding: 30px;">Belum ada catatan presensi.</td></tr>`;
             } else {
                 filtered.forEach(d => {
                     if (d.status === 'Hadir' || d.status === 'Lembur') totalHadir++;
@@ -371,33 +444,43 @@
                     totalLembur += d.jamLembur;
                     totalAll += d.totalJam;
 
-                    // Parse tanggal untuk tampilan ringkas (misal: 22 Okt)
                     const dateObj = new Date(d.tanggal);
                     const tglSort = `${String(dateObj.getDate()).padStart(2,'0')} ${BULAN_NAMES[dateObj.getMonth()].substring(0,3)}`;
+
+                    // Highlight teks status
+                    let statusColor = "var(--text-main)";
+                    if(d.status === 'Tidak' || d.status === 'Izin' || d.status === 'Sakit') statusColor = "#FF6B6B";
+                    if(d.status === 'Lembur' && d.hari === 'Minggu') statusColor = "#2ECC71";
 
                     tbody.innerHTML += `
                         <tr>
                             <td>${tglSort}</td>
                             <td>${d.hari}</td>
-                            <td>${d.status}</td>
-                            <td class="text-center">${d.jamReguler}</td>
-                            <td class="text-center">${d.jamLembur}</td>
-                            <td class="text-center" style="color:var(--accent-light); font-weight:bold;">${d.totalJam}</td>
+                            <td style="color:${statusColor}; font-weight:bold;">${d.status}</td>
+                            <td class="text-center">${d.jamReguler > 0 ? d.jamReguler : '-'}</td>
+                            <td class="text-center">${d.jamLembur > 0 ? d.jamLembur : '-'}</td>
+                            <td class="text-center" style="color:var(--accent-light); font-weight:bold; font-size:1.1rem;">${d.totalJam > 0 ? d.totalJam : '-'}</td>
                         </tr>
                     `;
                 });
             }
 
-            document.getElementById('sum-hari').innerText = totalHadir;
-            document.getElementById('sum-reguler').innerText = totalReg;
-            document.getElementById('sum-lembur').innerText = totalLembur;
-            document.getElementById('sum-total').innerText = totalAll;
+            // Animasi angka (efek pop)
+            const sumIds = ['sum-hari', 'sum-reguler', 'sum-lembur', 'sum-total'];
+            const sumVals = [totalHadir, totalReg, totalLembur, totalAll];
+            
+            sumIds.forEach((id, index) => {
+                const el = document.getElementById(id);
+                el.innerText = sumVals[index];
+                el.style.transform = 'scale(1.3)';
+                setTimeout(() => el.style.transform = 'scale(1)', 200);
+            });
         }
 
         /* ================= EXPORT / IMPORT ================= */
         function exportData() {
             const db = getDB();
-            if(db.length === 0) return alert("Belum ada data untuk diexport!");
+            if(db.length === 0) return alert("Kosong! Belum ada data yang bisa diexport.");
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
             const anchor = document.createElement('a');
             anchor.href = dataStr;
@@ -409,7 +492,7 @@
 
         function importData() {
             const fileInput = document.getElementById('import-file');
-            if(!fileInput.files.length) return alert("Pilih file JSON terlebih dahulu!");
+            if(!fileInput.files.length) return alert("Silakan pilih file JSON ZheeSchedule terlebih dahulu.");
             
             const file = fileInput.files[0];
             const reader = new FileReader();
@@ -418,19 +501,23 @@
                     const importedData = JSON.parse(e.target.result);
                     if(Array.isArray(importedData)) {
                         saveDB(importedData);
-                        alert("Data berhasil dipulihkan!");
-                        updateFilterDropdown();
-                        initPresensi(); // Update hari ini jika terpengaruh
-                    } else { alert("Format data tidak valid."); }
-                } catch (error) { alert("Gagal membaca file JSON."); }
+                        alert("Berhasil! Data presensimu berhasil dipulihkan.");
+                        if (document.getElementById('riwayat').classList.contains('active')) updateFilterDropdown();
+                        initAppLogic(); 
+                    } else { alert("Error: Format data tidak dikenali."); }
+                } catch (error) { alert("Error: Gagal membaca file JSON."); }
             };
             reader.readAsText(file);
         }
 
         // Initialize App on load
-        window.onload = () => { initPresensi(); };
-        // Auto-reset trigger cek per 1 jam, jikalau App terbuka saat lewat tengah malam
-        setInterval(initPresensi, 3600000); 
+        window.onload = () => {
+            startRealtimeClock();
+            initAppLogic();
+        };
+        
+        // Auto-refresh cek pergantian hari jika dibiarkan terbuka melewati tengah malam
+        setInterval(initAppLogic, 1000 * 60 * 30); // Cek tiap 30 menit
 
     </script>
 </body>
