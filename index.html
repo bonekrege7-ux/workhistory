@@ -24,6 +24,8 @@
             --text-sec: #AAAAAA;
             --btn-bg: #2C2C2C;
             --btn-hover: #444444;
+            --blue-btn: #1976D2;
+            --blue-hover: #1565C0;
             
             /* Calendar Colors */
             --cal-present: #4CAF50; 
@@ -43,6 +45,15 @@
         .screen.active { display: flex; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes staggerFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .anim-item {
+            opacity: 0;
+            animation: staggerFade 0.5s ease forwards;
+        }
 
         /* ================= LOADING SCREEN ================= */
         #loading-screen { position: fixed; inset: 0; background: var(--bg-main); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
@@ -72,6 +83,10 @@
         .btn-primary:hover { background: #E0E0E0; }
         .btn-primary:active { transform: scale(0.98); }
         
+        .btn-blue { width: 100%; padding: 16px; background: var(--blue-btn); color: #FFFFFF; border: none; border-radius: 8px; font-weight: bold; font-size: 1.05rem; cursor: pointer; transition: 0.2s; }
+        .btn-blue:hover { background: var(--blue-hover); }
+        .btn-blue:active { transform: scale(0.98); }
+
         .btn-outline { width: 100%; padding: 14px; background: transparent; border: 1px solid var(--text-sec); color: var(--text-main); border-radius: 8px; cursor: pointer; transition: 0.2s; margin-top: 10px; font-size: 1rem; }
         .btn-outline:hover { background: var(--btn-bg); }
 
@@ -118,8 +133,8 @@
         .close-modal { background: none; border: none; color: var(--text-sec); font-size: 1.5rem; cursor: pointer; }
         .close-modal:hover { color: var(--text-main); }
 
-        /* Detail List Item inside Modal */
-        .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        /* Detail List Item */
+        .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
         .detail-row:last-child { border-bottom: none; }
         .detail-label { color: var(--text-sec); }
         .detail-val { font-weight: bold; text-align: right; }
@@ -236,6 +251,28 @@
                 <input type="file" id="import-file" accept=".json">
                 <button class="btn-outline" onclick="importData()">Restore Data</button>
             </div>
+
+            <!-- MENU TOMBOL BIRU DI PALING BAWAH PAGE HISTORI -->
+            <div style="margin-bottom: 30px;">
+                <button class="btn-blue" onclick="openSalaryScreen()">💳 Calculate Salary Breakdown</button>
+            </div>
+        </div>
+
+        <!-- ================= SALARY BREAKDOWN SCREEN ================= -->
+        <div id="salary-screen" class="screen">
+            <div class="top-bar">
+                <button class="back-btn" onclick="openScreen('history-screen')">◄ Back</button>
+                <div class="screen-title">SALARY BREAKDOWN</div>
+            </div>
+
+            <div class="card text-center anim-item" style="animation-delay: 0.1s;">
+                <span style="color: var(--text-sec); font-size: 0.9rem;">Selected Period</span>
+                <h2 id="salary-period-display" style="font-size: 1.3rem; color: #FFFFFF; margin-top: 5px;">-</h2>
+            </div>
+
+            <div id="salary-details-container">
+                <!-- Dynamically Generated Items with Animations -->
+            </div>
         </div>
 
         <!-- ================= ABOUT SCREEN ================= -->
@@ -246,8 +283,8 @@
             </div>
             <div class="card text-center" style="padding: 40px 20px;">
                 <h2 style="margin-bottom: 10px;">Work Schedule</h2>
-                <p style="color: var(--text-sec); margin-bottom: 20px; font-size: 0.95rem;">Version 2.4 (Dark Edition)<br>Designed for mobile & desktop.</p>
-                <p style="color: var(--text-sec); font-size: 0.9rem;">Features automatic cut-off calculations (26th - 25th), dynamic UI, interactive tap-to-view calendar with pen edit, and local permanent storage.</p>
+                <p style="color: var(--text-sec); margin-bottom: 20px; font-size: 0.95rem;">Version 2.5 (Dark Edition)<br>Designed for mobile & desktop.</p>
+                <p style="color: var(--text-sec); font-size: 0.9rem;">Features automatic cut-off calculations (26th - 25th), salary breakdown calculation, custom tap-to-edit calendar, and local permanent storage.</p>
             </div>
         </div>
 
@@ -295,6 +332,10 @@
         function getDB() { return JSON.parse(localStorage.getItem(DB_KEY) || '[]'); }
         function saveDB(data) { localStorage.setItem(DB_KEY, JSON.stringify(data)); }
 
+        function formatIDR(amount) {
+            return 'Rp ' + amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
         // Date Logic (Cut-off 25th)
         function getPeriode(dateObj) {
             let year = dateObj.getFullYear();
@@ -331,6 +372,7 @@
 
             if (screenId === 'presence-screen') checkTodayPresence();
             if (screenId === 'history-screen') updateFilterDropdown();
+            if (screenId === 'salary-screen') renderSalaryBreakdown();
         }
 
         /* ================= ATTENDANCE (PRESENCE) MODULE ================= */
@@ -552,6 +594,104 @@
             }
         }
 
+        /* ================= SALARY BREAKDOWN MODULE ================= */
+        function openSalaryScreen() {
+            openScreen('salary-screen');
+        }
+
+        function renderSalaryBreakdown() {
+            const activePeriod = document.getElementById('filter-periode').value || getPeriode(new Date());
+            document.getElementById('salary-period-display').innerText = formatPeriodeName(activePeriod);
+
+            const db = getDB();
+            const filtered = db.filter(d => d.periode === activePeriod);
+
+            let regDays = 0, sunHolidayDays = 0;
+            let regOtHours = 0, sunHolidayOtHours = 0;
+            let mealCount = 0;
+
+            filtered.forEach(d => {
+                const dateObj = new Date(d.tanggal);
+                const isSundayOrHoliday = (dateObj.getDay() === 0) || (d.status === 'Holiday');
+
+                // Daily Base Salary Calculation
+                if (d.status === 'Present' || d.jamReguler > 0) {
+                    if (isSundayOrHoliday) {
+                        sunHolidayDays++;
+                    } else {
+                        regDays++;
+                    }
+                } else if (d.status === 'Overtime' && isSundayOrHoliday) {
+                    sunHolidayDays++;
+                }
+
+                // Overtime Calculation
+                if (d.isLembur || d.jamLembur > 0) {
+                    mealCount++;
+                    if (isSundayOrHoliday) {
+                        sunHolidayOtHours += d.jamLembur;
+                    } else {
+                        regOtHours += d.jamLembur;
+                    }
+                }
+            });
+
+            // Rate Calculations
+            const regDayRate = 85000;
+            const sunHolidayDayRate = 85000 * 2; // 170.000
+            const regOtRate = 13000;
+            const sunHolidayOtRate = 13000 * 2; // 26.000
+            const mealRate = 10000;
+
+            const totalRegDayPay = regDays * regDayRate;
+            const totalSunHolidayDayPay = sunHolidayDays * sunHolidayDayRate;
+            const totalRegOtPay = regOtHours * regOtRate;
+            const totalSunHolidayOtPay = sunHolidayOtHours * sunHolidayOtRate;
+            const totalMealPay = mealCount * mealRate;
+
+            const grandTotalSalary = totalRegDayPay + totalSunHolidayDayPay + totalRegOtPay + totalSunHolidayOtPay + totalMealPay;
+
+            const container = document.getElementById('salary-details-container');
+            container.innerHTML = `
+                <div class="card anim-item" style="animation-delay: 0.2s;">
+                    <div style="font-size: 1rem; font-weight: bold; color: var(--text-sec); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Base Daily Pay</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Regular Work Days (${regDays} days × ${formatIDR(regDayRate)})</span>
+                        <span class="detail-val">${formatIDR(totalRegDayPay)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Sunday / Holiday Days (${sunHolidayDays} days × ${formatIDR(sunHolidayDayRate)})</span>
+                        <span class="detail-val">${formatIDR(totalSunHolidayDayPay)}</span>
+                    </div>
+                </div>
+
+                <div class="card anim-item" style="animation-delay: 0.35s;">
+                    <div style="font-size: 1rem; font-weight: bold; color: var(--text-sec); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Overtime Pay</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Regular Overtime (${regOtHours} hrs × ${formatIDR(regOtRate)})</span>
+                        <span class="detail-val">${formatIDR(totalRegOtPay)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Sunday / Holiday Overtime (${sunHolidayOtHours} hrs × ${formatIDR(sunHolidayOtRate)})</span>
+                        <span class="detail-val">${formatIDR(totalSunHolidayOtPay)}</span>
+                    </div>
+                </div>
+
+                <div class="card anim-item" style="animation-delay: 0.5s;">
+                    <div style="font-size: 1rem; font-weight: bold; color: var(--text-sec); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Allowances</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Overtime Meal Allowance (${mealCount} days × ${formatIDR(mealRate)})</span>
+                        <span class="detail-val">${formatIDR(totalMealPay)}</span>
+                    </div>
+                </div>
+
+                <div class="card anim-item" style="animation-delay: 0.65s; background: linear-gradient(145deg, #1E1E1E, #252538); border-color: var(--blue-btn);">
+                    <div style="font-size: 0.9rem; color: var(--text-sec); text-align: center;">TOTAL ESTIMATED SALARY</div>
+                    <div style="font-size: 2rem; font-weight: 800; color: #FFFFFF; text-align: center; margin-top: 5px;">${formatIDR(grandTotalSalary)}</div>
+                </div>
+            `;
+        }
+
         /* ================= DAY DETAIL MODAL LOGIC ================= */
         function openDayDetailModal(dateStr) {
             const db = getDB();
@@ -561,7 +701,6 @@
             
             document.getElementById('detail-date-display').innerText = `${HARI_NAMES[hariInt]}, ${dateObj.getDate()} ${BULAN_NAMES[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
             
-            // Wire up pen icon button to trigger edit modal for this specific date
             const penBtn = document.getElementById('pen-edit-trigger');
             penBtn.onclick = () => {
                 closeDayDetailModal();
@@ -585,13 +724,11 @@
                 let regScheduleStr = "-";
                 let otScheduleStr = "-";
 
-                // Determine Regular Schedule Time
                 if (record.status === 'Present') {
                     if (hariInt >= 1 && hariInt <= 5) regScheduleStr = "08:00 - 16:00 (8.0 Hours)";
                     else if (hariInt === 6) regScheduleStr = "08:00 - 13:00 (5.0 Hours)";
                 }
 
-                // Determine Overtime Schedule Time
                 if (record.isLembur) {
                     if (hariInt >= 1 && hariInt <= 5) otScheduleStr = "16:00 - 19:30 (+3.5 Hours)";
                     else if (hariInt === 6) otScheduleStr = "13:00 - 15:00 (+2.0 Hours)";
