@@ -271,7 +271,7 @@
             </div>
 
             <div id="salary-details-container">
-                <!-- Dynamically Generated Items with Animations -->
+                <!-- Dynamically Generated Items -->
             </div>
         </div>
 
@@ -283,7 +283,7 @@
             </div>
             <div class="card text-center" style="padding: 40px 20px;">
                 <h2 style="margin-bottom: 10px;">Work Schedule</h2>
-                <p style="color: var(--text-sec); margin-bottom: 20px; font-size: 0.95rem;">Version 2.5 (Dark Edition)<br>Designed for mobile & desktop.</p>
+                <p style="color: var(--text-sec); margin-bottom: 20px; font-size: 0.95rem;">Version 2.6 (Dark Edition)<br>Designed for mobile & desktop.</p>
                 <p style="color: var(--text-sec); font-size: 0.9rem;">Features automatic cut-off calculations (26th - 25th), salary breakdown calculation, custom tap-to-edit calendar, and local permanent storage.</p>
             </div>
         </div>
@@ -298,7 +298,6 @@
                 <button class="close-modal" onclick="closeDayDetailModal()">✖</button>
             </div>
             
-            <!-- Sub-header bar with Date & Pen Icon -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
                 <p id="detail-date-display" style="color:var(--text-sec); font-size: 0.9rem; margin: 0;"></p>
                 <button id="pen-edit-trigger" class="pen-icon-btn">✏️ Edit</button>
@@ -346,7 +345,7 @@
         }
         function formatPeriodeName(periodeStr) {
             const [y, m] = periodeStr.split('-');
-            return `${BULAN_NAMES[parseInt(m)-1]}${y}`;
+            return `${BULAN_NAMES[parseInt(m)-1]} ${y}`;
         }
 
         /* ================= ANIMATION & NAVIGATION ================= */
@@ -381,7 +380,7 @@
             const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
             const hariInt = now.getDay();
             
-            document.getElementById('presence-date-subtitle').innerText = `${HARI_NAMES[hariInt]},${now.getDate()} ${BULAN_NAMES[now.getMonth()]}${now.getFullYear()}`;
+            document.getElementById('presence-date-subtitle').innerText = `${HARI_NAMES[hariInt]}, ${now.getDate()} ${BULAN_NAMES[now.getMonth()]} ${now.getFullYear()}`;
 
             const db = getDB();
             const alreadyFilled = db.find(d => d.id === todayStr);
@@ -494,19 +493,29 @@
         function updateFilterDropdown() {
             const db = getDB();
             const select = document.getElementById('filter-periode');
+            const prevSelected = select.value;
             select.innerHTML = '';
             
-            const periods = [...new Set(db.map(d => d.periode))].sort().reverse();
-            const currentPeriod = getPeriode(new Date());
+            // Grab periods from DB
+            const dbPeriods = db.map(d => d.periode);
             
-            if (periods.length === 0) {
-                select.innerHTML = `<option value="${currentPeriod}">${formatPeriodeName(currentPeriod)}</option>`;
-            } else {
-                periods.forEach(p => {
-                    const isSelected = p === currentPeriod ? 'selected' : '';
-                    select.innerHTML += `<option value="${p}" ${isSelected}>${formatPeriodeName(p)}</option>`;
-                });
+            // Automatically generate current month and 6 previous months (including September, etc.)
+            const generatedPeriods = [];
+            const now = new Date();
+            for (let i = 0; i < 6; i++) {
+                const testDate = new Date(now.getFullYear(), now.getMonth() - i, 15);
+                generatedPeriods.push(getPeriode(testDate));
             }
+
+            // Combine DB periods & generated past periods
+            const allPeriods = [...new Set([...dbPeriods, ...generatedPeriods])].sort().reverse();
+            const currentPeriod = getPeriode(now);
+
+            allPeriods.forEach(p => {
+                const isSelected = (prevSelected && p === prevSelected) || (!prevSelected && p === currentPeriod) ? 'selected' : '';
+                select.innerHTML += `<option value="${p}" ${isSelected}>${formatPeriodeName(p)}</option>`;
+            });
+
             renderHistory();
         }
 
@@ -614,7 +623,6 @@
                 const dateObj = new Date(d.tanggal);
                 const isSundayOrHoliday = (dateObj.getDay() === 0) || (d.status === 'Holiday');
 
-                // Daily Base Salary Calculation
                 if (d.status === 'Present' || d.jamReguler > 0) {
                     if (isSundayOrHoliday) {
                         sunHolidayDays++;
@@ -625,7 +633,6 @@
                     sunHolidayDays++;
                 }
 
-                // Overtime Calculation
                 if (d.isLembur || d.jamLembur > 0) {
                     mealCount++;
                     if (isSundayOrHoliday) {
@@ -636,11 +643,10 @@
                 }
             });
 
-            // Rate Calculations
             const regDayRate = 85000;
-            const sunHolidayDayRate = 85000 * 2; // 170.000
+            const sunHolidayDayRate = 85000 * 2;
             const regOtRate = 13000;
-            const sunHolidayOtRate = 13000 * 2; // 26.000
+            const sunHolidayOtRate = 13000 * 2;
             const mealRate = 10000;
 
             const totalRegDayPay = regDays * regDayRate;
